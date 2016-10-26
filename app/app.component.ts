@@ -49,6 +49,7 @@ import 'rxjs/Rx';
                 </form>
             </div>
         </div>
+        
 `
 })
 export class AppComponent {

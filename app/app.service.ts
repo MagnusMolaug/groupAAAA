@@ -1,6 +1,7 @@
 import { Injectable }    from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { OrganisationUnit } from './organisationUnit';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/Rx';
 
@@ -19,7 +20,8 @@ export class AppService {
 
     private headers = new Headers({'Content-Type': 'application/json'});
 
-    constructor(private http: Http) { }
+    constructor(private http: Http) {
+    }
 
     saveOrganisationUnit(organisationUnit: OrganisationUnit): any {
         // POST the payload to the server to save the organisationUnit
@@ -28,25 +30,35 @@ export class AppService {
         this.headers.append('Authorization', this.basicAuth);
         return this.http
             .post(`${this.serverUrl}/organisationUnits`, JSON.stringify(organisationUnit), {headers: this.headers})
-            .map( res => res.json() )
+            .map(res => res.json())
     }
 
     loadOrganisationUnits(): any {
         // GET the payload from the server
-
+        console.log("loadOrganisationUnits");
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http
-            .get(`${this.serverUrl}/organisationUnits?paging=false&level=1`, {headers: this.headers})
-            .map(res => res.json())
-
+        return Observable.create(observer => {
+            this.http
+                .get(`${this.serverUrl}/organisationUnits?paging=false&level=1`, {headers: this.headers})
+                .map(res => res.json())
+                .subscribe((data) => {
+                    observer.next(data);
+                    observer.complete();
+                });
+        });
     }
 
-    deleteOrganisationUnits(index): any{
-        console.log("inner delete of " + index);
+    deleteOrganisationUnit(unitId): any {
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http
-            .post(`${this.serverUrl}/organisationUnits`, {headers: this.headers})
-            .map(res => res.json())
-
+        return Observable.create(observer => {
+            this.http
+                .delete(`${this.serverUrl}/organisationUnits/${unitId}`, {headers: this.headers})
+                .subscribe((res) => {
+                    observer.next(res);
+                    observer.complete();
+                }, (error) => {
+                    alert("I did smoke, but I did not inhale.");
+                });
+        });
     }
 }

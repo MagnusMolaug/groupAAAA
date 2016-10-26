@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var http_1 = require('@angular/http');
+var Observable_1 = require('rxjs/Observable');
 require('rxjs/add/operator/map');
 require('rxjs/Rx');
 var AppService = (function () {
@@ -35,18 +36,33 @@ var AppService = (function () {
             .map(function (res) { return res.json(); });
     };
     AppService.prototype.loadOrganisationUnits = function () {
+        var _this = this;
         // GET the payload from the server
+        console.log("loadOrganisationUnits");
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http
-            .get(this.serverUrl + "/organisationUnits?paging=false&level=1", { headers: this.headers })
-            .map(function (res) { return res.json(); });
+        return Observable_1.Observable.create(function (observer) {
+            _this.http
+                .get(_this.serverUrl + "/organisationUnits?paging=false&level=1", { headers: _this.headers })
+                .map(function (res) { return res.json(); })
+                .subscribe(function (data) {
+                observer.next(data);
+                observer.complete();
+            });
+        });
     };
-    AppService.prototype.deleteOrganisationUnits = function (index) {
-        console.log("inner delete of " + index);
+    AppService.prototype.deleteOrganisationUnit = function (unitId) {
+        var _this = this;
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http
-            .post(this.serverUrl + "/organisationUnits", { headers: this.headers })
-            .map(function (res) { return res.json(); });
+        return Observable_1.Observable.create(function (observer) {
+            _this.http
+                .delete(_this.serverUrl + "/organisationUnits/" + unitId, { headers: _this.headers })
+                .subscribe(function (res) {
+                observer.next(res);
+                observer.complete();
+            }, function (error) {
+                alert("I did smoke, but I did not inhale.");
+            });
+        });
     };
     AppService = __decorate([
         core_1.Injectable(), 

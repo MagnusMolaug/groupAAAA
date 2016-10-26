@@ -11,7 +11,7 @@ import 'rxjs/Rx';
            <div class="app">
             <div class="list">
                 <ul>
-                    <li *ngFor="let unit of organisationUnit;" (click)=deleteUnit(organisationUnit.findIndex)>{{unit.displayName}}</li>
+                    <li *ngFor="let unit of organisationUnit;" [attr.data-id]="unit.id" (click)="deleteUnit($event)">{{unit.displayName}}</li>
                 </ul>
             </div>
             <div class="form">
@@ -79,8 +79,11 @@ export class AppComponent {
             .subscribe(this.loadList())
     }
 
-    deleteUnit(index): void{
-        console.log("its deleting " + index);
-        this.appService.deleteOrganisationUnits(index);
+    deleteUnit(event): void {
+        this.appService.deleteOrganisationUnit(event.target.dataset.id)
+            .subscribe((data) => {
+                this.loadList()
+            })
     }
+
 }

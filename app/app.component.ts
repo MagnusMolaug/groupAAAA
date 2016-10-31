@@ -8,48 +8,16 @@ import 'rxjs/Rx';
 @Component({
     selector: 'my-app',
     template: `
-           <div class="app">
-            <div class="list">
-                <ul>
-                    <li *ngFor="let unit of organisationUnit;" [attr.data-id]="unit.id" (click)="deleteUnit($event)">{{unit.displayName}}</li>
-                </ul>
+           <div class="app" id="mainContainer">
+                <button class="btn" onclick="toggleDivMain('people')">
+                    People
+                </button>
+                <button class="btn" onclick="toggleDivMain('group')">
+                    Group
+                </button>
+                
             </div>
-            <div class="form">
-                <form *ngIf="true" #unitForm="ngForm">
-                    <div>
-                        <label>
-                            <span>Name</span>
-                            <input type="text" class="form-control" id="name"
-                                required
-                                [(ngModel)]="model.name" name="name"
-                                #name="ngModel" >
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <span>Short name</span>
-                            <input type="text" class="form-control" id="shortName"
-                                required
-                                [(ngModel)]="model.shortName" name="shortName"
-                                #shortName="ngModel" >
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <span>Opening date</span>
-                            <input type="date" class="form-control" id="date"
-                                required
-                                [(ngModel)]="model.openingDate" name="openingDate"
-                                #openingDate="ngModel" >
-                        </label>
-                    </div>
-                    <div>
-                    <button type="submit" class="btn btn-default" [disabled]="!unitForm.form.valid" (click)="newUnit()">Submit</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
+                
 `
 })
 export class AppComponent {

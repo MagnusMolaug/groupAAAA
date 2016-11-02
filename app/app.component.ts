@@ -1,58 +1,68 @@
 import { Component } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { AppService } from './app.service';
-import { OrganisationUnit } from './organisationUnit';
+import { DataStore } from './dataStore';
 
 import 'rxjs/Rx';
 
 @Component({
     selector: 'my-app',
     template: `
-           <div class="app" id="mainContainer">
-                <button class="btn" onclick="toggleDivMain('people')">
-                    People
-                </button>
-                <button class="btn" onclick="toggleDivMain('group')">
-                    Group
-                </button>
-                
+            <div class="app" id="mainContainer">
+                <div class="content">
+                    <nav class="navbar navbar-default">
+                      <div class="container-fluid">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header">
+                          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                          </button>
+                          <a class="navbar-brand" href="#">Brand</a>
+                        </div>
+                    
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                          <ul class="nav navbar-nav">
+                            <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
+                            <li><a href="#">Link</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </nav>
+                </div>
+                TODO: Fix the navbar with bootstrap styling
             </div>
                 
 `
 })
 export class AppComponent {
-    public organisationUnit = [];
-    private organisationUnits;
 
-    model = new OrganisationUnit('', '', '');
+    //VARIABLES START
 
+    model = new DataStore('', '');
+
+    //VARIABLES END
 
     constructor(
-        private appService: AppService,
-    ) { this.loadList() }
+        private appService: AppService
+    ) { this.loadObjectList() }
 
-    loadList(): void {
-        this.appService.loadOrganisationUnits()
-            .subscribe( res => this.updateList(res.organisationUnits) );
+    loadObjectList(): void {
+        //Loads a list of objects in the datastore.
     }
 
-    updateList( organisationUnits ): void {
-        this.organisationUnit = [];
-        for(let i = 0; i < organisationUnits.length; i++){
-            this.organisationUnit.push(organisationUnits[i]);
-        }
+    updateObjectList( dataStore ): void {
+        //updates variables of an object in the datastore.
     }
 
-    newUnit(): void {
-        this.appService.saveOrganisationUnit(this.model)
-            .subscribe(this.loadList())
+    newObject(): void {
+        //Create a new object and save it to the datastore.
     }
 
-    deleteUnit(event): void {
-        this.appService.deleteOrganisationUnit(event.target.dataset.id)
-            .subscribe((data) => {
-                this.loadList()
-            })
+    deleteObject(event): void {
+        //Delete an object fromm the datastore.
     }
 
 }

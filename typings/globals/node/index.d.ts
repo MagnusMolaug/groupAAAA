@@ -2287,7 +2287,7 @@ declare module "crypto" {
     export var Certificate: {
         new (): Certificate;
         (): Certificate;
-    }
+    };
 
     export var fips: boolean;
 

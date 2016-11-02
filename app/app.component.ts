@@ -41,7 +41,6 @@ export class AppComponent {
 
     //VARIABLES START
 
-    model = new DataStore('', '');
 
     //VARIABLES END
 

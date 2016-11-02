@@ -10,14 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var core_1 = require('@angular/core');
 var app_service_1 = require('./app.service');
-var dataStore_1 = require('./dataStore');
 require('rxjs/Rx');
 var AppComponent = (function () {
+    //VARIABLES START
     //VARIABLES END
     function AppComponent(appService) {
         this.appService = appService;
-        //VARIABLES START
-        this.model = new dataStore_1.DataStore('', '');
         this.loadObjectList();
     }
     AppComponent.prototype.loadObjectList = function () {

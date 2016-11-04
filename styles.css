@@ -6,3 +6,18 @@
 .namespaceName{
     font-weight: bold;
 }
+.buttonLeftAdjust{
+    margin-right: 1em;
+}
+#dataStoreMainList{
+    padding-left: 0px;
+    padding-right: 7px;
+    height:100vh;
+}
+#dataStoreInfo{
+    padding-right: 0px;
+    padding-left: 7px;
+}
+#body{
+    background-color: #E0E0E0;
+}

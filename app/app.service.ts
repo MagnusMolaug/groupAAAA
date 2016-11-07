@@ -22,10 +22,21 @@ export class AppService {
 
     saveDataStoreObject(dataStore: DataStore): any {
         //Receive a datastore object and saves it to the database.
+
+        console.log(JSON.stringify(dataStore));
+        this.headers.append('Authorization', this.basicAuth);
+        return this.http
+            .post(`${this.serverUrl}/dataStore`, JSON.stringify(dataStore), {headers: this.headers})
+            .map( res => res.json() )
     }
 
     loadDataStore(): any {
-        //Return a list of all datastore objecct in the database.
+        //Return a list of all datastore objects in the database.
+
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http
+            .get(`${this.serverUrl}/dataStore?paging=false&level=1`, {headers: this.headers})
+            .map(res => res.json())
     }
 
     deleteDataStoreObject(objectId): any {

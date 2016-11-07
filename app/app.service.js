@@ -23,9 +23,18 @@ var AppService = (function () {
     }
     AppService.prototype.saveDataStoreObject = function (dataStore) {
         //Receive a datastore object and saves it to the database.
+        console.log(JSON.stringify(dataStore));
+        this.headers.append('Authorization', this.basicAuth);
+        return this.http
+            .post(this.serverUrl + "/dataStore", JSON.stringify(dataStore), { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     AppService.prototype.loadDataStore = function () {
-        //Return a list of all datastore objecct in the database.
+        //Return a list of all datastore objects in the database.
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http
+            .get(this.serverUrl + "/dataStore?paging=false&level=1", { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     AppService.prototype.deleteDataStoreObject = function (objectId) {
         //Delete a datastore object with the received ID

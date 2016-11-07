@@ -121,6 +121,36 @@ import 'rxjs/Rx';
             </div>
         </div>
     </div>
+            <div class="list">
+                <ul>
+                    <li *ngFor="let unit of dataStores;" >{{unit.name}}</li>
+                </ul>
+            </div>
+            <div class="form">
+                <form *ngIf="true" #unitForm="ngForm">
+                    <div>
+                        <label>
+                            <span>Name</span>
+                            <input type="text" class="form-control" id="name"
+                                required
+                                [(ngModel)]="model.name" name="name"
+                                #name="ngModel" >
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <span>content</span>
+                            <input type="text" class="form-control" id="value"
+                                required
+                                [(ngModel)]="model.value" name="value"
+                                #shortName="ngModel" >
+                        </label>
+                    </div>
+                    <div>
+                    <button type="submit" class="btn btn-default" [disabled]="!unitForm.form.valid" (click)="newDataStore()">Submit</button>
+                    </div>
+                </form>
+            </div>
                 
 `
 })
@@ -128,6 +158,10 @@ export class AppComponent {
 
     //VARIABLES START
 
+    public dataStore = [];
+    private dataStores;
+
+    model = new DataStore('', '');
 
     //VARIABLES END
 
@@ -136,15 +170,19 @@ export class AppComponent {
     ) { this.loadObjectList() }
 
     loadObjectList(): void {
-        //Loads a list of objects in the datastore.
+        this.appService.loadDataStore()
+            .subscribe( res => this.updateObjectList(res.dataStores) );
     }
 
     updateObjectList( dataStore ): void {
         //updates variables of an object in the datastore.
     }
 
-    newObject(): void {
+    newDataStore(): void {
         //Create a new object and save it to the datastore.
+
+        this.appService.saveDataStoreObject(this.model)
+            .subscribe(this.loadObjectList())
     }
 
     deleteObject(event): void {

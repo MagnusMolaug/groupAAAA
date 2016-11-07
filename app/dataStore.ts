@@ -1,6 +1,6 @@
 export class DataStore {
     constructor(
         public name: string,
-        public value: JSON
+        public value: string
     ) {  }
 }

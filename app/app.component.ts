@@ -161,7 +161,7 @@ export class AppComponent {
     public dataStore = [];
     private dataStores;
 
-    model = new DataStore('', '');
+    model = new DataStore('', '', true);
 
     //VARIABLES END
 

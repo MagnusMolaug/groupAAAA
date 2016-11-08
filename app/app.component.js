@@ -18,7 +18,7 @@ var AppComponent = (function () {
         this.appService = appService;
         //VARIABLES START
         this.dataStore = [];
-        this.model = new dataStore_1.DataStore('', '');
+        this.model = new dataStore_1.DataStore('', '', true);
         this.loadObjectList();
     }
     AppComponent.prototype.loadObjectList = function () {

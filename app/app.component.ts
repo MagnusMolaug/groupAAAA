@@ -152,6 +152,7 @@ export class AppComponent {
 
     public dataStore = [];
     private dataStores;
+    //private settings;
 
     model = new DataStore('', '', true);
 
@@ -164,7 +165,32 @@ export class AppComponent {
     loadObjectList(): void {
         /*this.appService.loadDataStore()
             .subscribe( res => this.updateObjectList(res.dataStores) );*/
-        alert(this.appService.getNamespaces());
+        //console.log(this.appService.getNamespaces());
+
+        //var AAAA = this.appService.getNamespaces();
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://play.dhis2.org/demo/api/dataStore",
+            "method": "GET",
+            "headers": {
+                "authorization":"Basic YWRtaW46ZGlzdHJpY3Q=",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "DELETE, HEAD, GET, OPTIONS, POST, PUT",
+                "Access-Control-Allow-Headers": "Content-Type, Content-Range, Content-Disposition, Content-Description",
+                "Access-Control-Max-Age": "1728000"
+            }
+        }
+        $.ajax(settings).done(function (response) {
+            console.log("A" + response);
+        });
+
+        //this.appService.getNamespaces();
+        /*
+        $.ajax(this.settings).done(function (response) {
+            return response;
+        });*/
     }
 
     updateObjectList( dataStore ): void {

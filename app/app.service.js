@@ -17,9 +17,10 @@ var AppService = (function () {
     function AppService(http) {
         this.http = http;
         //VARIABLES START
-        this.serverUrl = 'https://play.dhis2.org/demo/api/dataStore';
+        this.serverUrl = 'https://play.dhis2.org/test/api/dataStore';
         this.basicAuth = "Basic " + btoa('admin:district');
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
+        this.res = "";
     }
     AppService.prototype.saveDataStoreObject = function (dataStore) {
         //Receive a datastore object and saves it to the database.
@@ -41,8 +42,31 @@ var AppService = (function () {
     };
     AppService.prototype.getNamespaces = function () {
         //Gets list of namespaces
-        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http.get("https://play.dhis2.org/demo/api/dataStore", { headers: this.headers });
+        //this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        /*this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http
+            .get('${this.serverUrl}?paging=false&level=1', {headers: this.headers})*/
+        var settings = {
+            "async": true,
+            "crossDomain": true,
+            "url": "https://play.dhis2.org/demo/api/dataStore",
+            "method": "GET",
+            "headers": {
+                "authorization": "Basic YWRtaW46ZGlzdHJpY3Q=",
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "DELETE, HEAD, GET, OPTIONS, POST, PUT",
+                "Access-Control-Allow-Headers": "Content-Type, Content-Range, Content-Disposition, Content-Description",
+                "Access-Control-Max-Age": "1728000"
+            }
+        };
+        $.ajax(settings).done(function (response) {
+            console.log("A" + response);
+            this.res = response;
+        });
+        console.log("RES: " + this.res);
+        return this.res;
+        //return this.http.get(this.serverUrl, {headers: this.headers})
         //.map(res => res.json())
     };
     AppService.prototype.getNamespaceKeys = function () {

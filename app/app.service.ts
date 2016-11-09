@@ -10,7 +10,7 @@ export class AppService {
 
     //VARIABLES START
 
-    private serverUrl = 'http://localhost:8082/api';
+    private serverUrl = 'https://play.dhis2.org/demo/api/dataStore';
     private basicAuth = `Basic ${btoa('admin:district')}`;
 
     private headers = new Headers({'Content-Type': 'application/json'});
@@ -26,8 +26,8 @@ export class AppService {
         console.log(JSON.stringify(dataStore));
         this.headers.append('Authorization', this.basicAuth);
         return this.http
-            .post(`${this.serverUrl}/dataStore`, JSON.stringify(dataStore), {headers: this.headers})
-            .map( res => res.json() )
+            .get(`${this.serverUrl}?paging=false&level=1`, {headers: this.headers})
+            //.map(res => res.json())
     }
 
     loadDataStore(): any {
@@ -35,11 +35,39 @@ export class AppService {
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http
-            .get(`${this.serverUrl}/dataStore?paging=false&level=1`, {headers: this.headers})
-            .map(res => res.json())
+            .get(`${this.serverUrl}?paging=false&level=1`, {headers: this.headers})
+            //.map(res => res.json())
     }
 
     deleteDataStoreObject(objectId): any {
         //Delete a datastore object with the received ID
     }
+
+    getNamespaces(){
+        //Gets list of namespaces
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.get("https://play.dhis2.org/demo/api/dataStore", {headers: this.headers})
+            //.map(res => res.json())
+    }
+
+    getNamespaceKeys(){
+
+    }
+
+    getKeyMetaData(){
+
+    }
+
+    addNamespaceKey(){
+
+    }
+
+    changeKeyMetadata(){
+
+    }
+
+    deleteNamespaceKey(){
+
+    }
+
 }

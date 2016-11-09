@@ -17,7 +17,7 @@ var AppService = (function () {
     function AppService(http) {
         this.http = http;
         //VARIABLES START
-        this.serverUrl = 'http://localhost:8082/api';
+        this.serverUrl = 'https://play.dhis2.org/demo/api/dataStore';
         this.basicAuth = "Basic " + btoa('admin:district');
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
     }
@@ -26,18 +26,34 @@ var AppService = (function () {
         console.log(JSON.stringify(dataStore));
         this.headers.append('Authorization', this.basicAuth);
         return this.http
-            .post(this.serverUrl + "/dataStore", JSON.stringify(dataStore), { headers: this.headers })
-            .map(function (res) { return res.json(); });
+            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers });
+        //.map(res => res.json())
     };
     AppService.prototype.loadDataStore = function () {
         //Return a list of all datastore objects in the database.
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http
-            .get(this.serverUrl + "/dataStore?paging=false&level=1", { headers: this.headers })
-            .map(function (res) { return res.json(); });
+            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers });
+        //.map(res => res.json())
     };
     AppService.prototype.deleteDataStoreObject = function (objectId) {
         //Delete a datastore object with the received ID
+    };
+    AppService.prototype.getNamespaces = function () {
+        //Gets list of namespaces
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.get("https://play.dhis2.org/demo/api/dataStore", { headers: this.headers });
+        //.map(res => res.json())
+    };
+    AppService.prototype.getNamespaceKeys = function () {
+    };
+    AppService.prototype.getKeyMetaData = function () {
+    };
+    AppService.prototype.addNamespaceKey = function () {
+    };
+    AppService.prototype.changeKeyMetadata = function () {
+    };
+    AppService.prototype.deleteNamespaceKey = function () {
     };
     AppService = __decorate([
         core_1.Injectable(), 

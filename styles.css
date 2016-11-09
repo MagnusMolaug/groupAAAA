@@ -12,10 +12,17 @@
 #dataStoreMainList{
     padding-left: 0px;
     padding-right: 7px;
-    height:100vh;
+}
+.namespaceList{
+    max-height:100vh;
+    overflow: auto;
 }
 #dataStoreInfo{
     padding-right: 0px;
+    padding-left: 7px;
+}
+#dataStoreKeyList{
+    padding-right: 7px;
     padding-left: 7px;
 }
 #body{

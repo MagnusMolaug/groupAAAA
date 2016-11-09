@@ -70,8 +70,8 @@ import 'rxjs/Rx';
                        </div>
                         <!--button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
                       </form>-->
-                    <div class="list-group">
-                      <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for object"></div>
+                    <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for an object"></div>
+                    <div class="list-group namespaceList">
                       <a href="#" class="list-group-item active">Namespace-1</a>
                       <a href="#" class="list-group-item">Namespace-2</a>
                       <a href="#" class="list-group-item">Namespace-3</a>
@@ -84,13 +84,39 @@ import 'rxjs/Rx';
                     </div>
                 </div>
             </div>
+
+            <div id="dataStoreKeyList" class=" col-md-3 col-sm-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        List of keys
+                    </div>
+                    <!--<form class="">
+                       <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                       </div>
+                        <!--button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+                      </form>-->
+                    <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for a key"></div>
+                    <div class="list-group namespaceList">
+                      <a href="#" class="list-group-item active">Key-1</a>
+                      <a href="#" class="list-group-item">Key-2</a>
+                      <a href="#" class="list-group-item">Key-3</a>
+                      <a href="#" class="list-group-item">Key-4</a>
+                      <a href="#" class="list-group-item">Key-5</a>
+                      <a href="#" class="list-group-item">Key-6</a>
+                      <a href="#" class="list-group-item">Key-7</a>
+                      <a href="#" class="list-group-item">Key-8</a>
+                      <a href="#" class="list-group-item">Key-9</a>
+                    </div>
+                </div>
+            </div>
             
-            <div id="dataStoreInfo" class=" col-md-9 col-sm-9">
+            <div id="dataStoreInfo" class=" col-md-6 col-sm-6">
                 <div class="panel panel-default">
                   <div class="panel-heading">
                     <div class="row">
                       <div class="col-lg-6 h4">
-                        Content
+                        Key: 5G6Jjgfjj
                       </div>
                       <div class="pull-right">
                         <a href="edit.html" class="btn btn-primary">Edit mode</a> <button class="btn btn-danger buttonLeftAdjust">Delete object</button>
@@ -98,10 +124,6 @@ import 'rxjs/Rx';
                     </div>
                   </div>
                   <div class="panel-body">
-                    <div class="namespaceName">
-                        Namespace-1
-                    </div>
-                    <hr>
                     <div class="JSONValues">
                         <div class="panel panel-default">
                             <div class="panel-heading">JSON value 1</div>
@@ -121,36 +143,6 @@ import 'rxjs/Rx';
             </div>
         </div>
     </div>
-            <div class="list">
-                <ul>
-                    <li *ngFor="let unit of dataStores;" >{{unit.name}}</li>
-                </ul>
-            </div>
-            <div class="form">
-                <form *ngIf="true" #unitForm="ngForm">
-                    <div>
-                        <label>
-                            <span>Name</span>
-                            <input type="text" class="form-control" id="name"
-                                required
-                                [(ngModel)]="model.name" name="name"
-                                #name="ngModel" >
-                        </label>
-                    </div>
-                    <div>
-                        <label>
-                            <span>content</span>
-                            <input type="text" class="form-control" id="value"
-                                required
-                                [(ngModel)]="model.value" name="value"
-                                #shortName="ngModel" >
-                        </label>
-                    </div>
-                    <div>
-                    <button type="submit" class="btn btn-default" [disabled]="!unitForm.form.valid" (click)="newDataStore()">Submit</button>
-                    </div>
-                </form>
-            </div>
                 
 `
 })
@@ -170,8 +162,9 @@ export class AppComponent {
     ) { this.loadObjectList() }
 
     loadObjectList(): void {
-        this.appService.loadDataStore()
-            .subscribe( res => this.updateObjectList(res.dataStores) );
+        /*this.appService.loadDataStore()
+            .subscribe( res => this.updateObjectList(res.dataStores) );*/
+        alert(this.appService.getNamespaces());
     }
 
     updateObjectList( dataStore ): void {

@@ -72,15 +72,9 @@ import 'rxjs/Rx';
                       </form>-->
                     <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for an object"></div>
                     <div class="list-group namespaceList">
-                      <a href="#" class="list-group-item active">Namespace-1</a>
-                      <a href="#" class="list-group-item">Namespace-2</a>
-                      <a href="#" class="list-group-item">Namespace-3</a>
-                      <a href="#" class="list-group-item">Namespace-4</a>
-                      <a href="#" class="list-group-item">Namespace-5</a>
-                      <a href="#" class="list-group-item">Namespace-6</a>
-                      <a href="#" class="list-group-item">Namespace-7</a>
-                      <a href="#" class="list-group-item">Namespace-8</a>
-                      <a href="#" class="list-group-item">Namespace-9</a>
+                    
+                        <div class="list-group-item nameSpaceListObject" *ngFor="let unit of dataStore;" (click)=deleteUnit(organisationUnit.findIndex)>{{unit}}</div>
+                    
                     </div>
                 </div>
             </div>
@@ -143,7 +137,7 @@ import 'rxjs/Rx';
             </div>
         </div>
     </div>
-                
+    
 `
 })
 export class AppComponent {
@@ -151,6 +145,7 @@ export class AppComponent {
     //VARIABLES START
 
     public dataStore = [];
+    public keyList = [];
     private dataStores;
     //private settings;
 
@@ -168,7 +163,7 @@ export class AppComponent {
         //console.log(this.appService.getNamespaces());
 
         //var AAAA = this.appService.getNamespaces();
-        var settings = {
+        /*var settings = {
             "async": true,
             "crossDomain": true,
             "url": "https://play.dhis2.org/demo/api/dataStore",
@@ -181,20 +176,40 @@ export class AppComponent {
                 "Access-Control-Allow-Headers": "Content-Type, Content-Range, Content-Disposition, Content-Description",
                 "Access-Control-Max-Age": "1728000"
             }
-        }
-        $.ajax(settings).done(function (response) {
+        }*/
+        /*$.ajax(settings).done(function (response) {
             console.log("A" + response);
-        });
+        });*/
 
         //this.appService.getNamespaces();
         /*
         $.ajax(this.settings).done(function (response) {
             return response;
         });*/
+        this.appService.getNamespaces().subscribe(res => this.updateObjectList(res));
     }
 
     updateObjectList( dataStore ): void {
         //updates variables of an object in the datastore.
+
+        this.dataStore = [];
+        for(let i = 0; i < dataStore.length; i++){
+            this.dataStore.push(dataStore[i]);
+        }
+    }
+
+    loadKeyList( nameSpace ): void{
+        //Gets a namespace and lists out all the keys for it
+
+        this.appService.getNamespaceKeys(nameSpace).subscribe(res => this.updateKeyList(res));
+    }
+
+    updateKeyList( keyList ): void{
+        this.keyList = [];
+        for(let i = 0; i < keyList.length; i++){
+            this.keyList.push(keyList[i]);
+        }
+        console.log(this.keyList);
     }
 
     newDataStore(): void {

@@ -1,10 +1,15 @@
 import { Injectable }    from '@angular/core';
-import { Headers, Http } from '@angular/http';
+import {Headers, Http, Response} from '@angular/http';
 import { DataStore } from './dataStore';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/Rx';
 
+
+class namespace{
+    content: string;
+
+}
 
 @Injectable()
 export class AppService {
@@ -12,10 +17,15 @@ export class AppService {
     //VARIABLES START
 
     private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
-    private basicAuth = `Basic ${btoa('admin:district')}`;
 
     private headers = new Headers({'Content-Type': 'application/json'});
+
+    private basicAuth = `Basic ${btoa('admin:district')}`;
+
     private res = "";
+
+    private namespace: namespace = new namespace();
+
 
     //VARIABLES END
 
@@ -46,39 +56,20 @@ export class AppService {
     }
 
     getNamespaces(): any{
-        //Gets list of namespaces
-        //this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 
-        /*this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http
-            .get('${this.serverUrl}?paging=false&level=1', {headers: this.headers})*/
-        var settings = {
-            "async": true,
-            "crossDomain": true,
-            "url": "https://play.dhis2.org/demo/api/dataStore",
-            "method": "GET",
-            "headers": {
-                "authorization":"Basic YWRtaW46ZGlzdHJpY3Q=",
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "DELETE, HEAD, GET, OPTIONS, POST, PUT",
-                "Access-Control-Allow-Headers": "Content-Type, Content-Range, Content-Disposition, Content-Description",
-                "Access-Control-Max-Age": "1728000"
-            }
-        }
-        $.ajax(settings).done(function (response) {
-            console.log("A" + response);
-            this.res = response;
-        });
-        console.log("RES: " + this.res);
-        return this.res;
 
-        //return this.http.get(this.serverUrl, {headers: this.headers})
-            //.map(res => res.json())
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+
+        return this.http.get(this.serverUrl, {headers: this.headers}).map(res => res.json());
+
     }
 
-    getNamespaceKeys(){
+    getNamespaceKeys( namespace ): any{
 
+
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.get(this.serverUrl + '/' + namespace, {headers: this.headers})
+            .map(res => res.json());
     }
 
     getKeyMetaData(){

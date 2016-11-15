@@ -19,7 +19,7 @@ var AppComponent = (function () {
         //VARIABLES START
         this.dataStore = [];
         this.keyList = ['No namespace chosen'];
-        this.JSONValuesList = [];
+        this.selectedKey = "-";
         //private settings;
         this.model = new dataStore_1.DataStore('', '', true);
         this.loadObjectList();
@@ -58,11 +58,12 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.updateJSONList = function (JSONList) {
         //Updates the JSON values list to contain values given
-        this.JSONValuesList = [];
+        this.JSONValuesList = null;
         console.log(JSONList);
-        for (var i = 0; i < JSONList.length; i++) {
+        /*for(let i = 0; i < JSONList.length; i++){
             this.JSONValuesList.push(JSONList[i]);
-        }
+        }*/
+        this.JSONValuesList = JSONList;
         console.log(this.JSONValuesList);
     };
     AppComponent.prototype.newDataStore = function () {

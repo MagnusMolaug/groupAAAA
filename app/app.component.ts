@@ -124,10 +124,10 @@ export class AppComponent {
 
     public dataStore = [];
     public keyList = ['No namespace chosen'];
-    public JSONValuesList = [];
+    public JSONValuesList : JSON;
 
     public selectedNamespace;
-    public selectedKey;
+    public selectedKey = "-";
 
     private dataStores;
     //private settings;
@@ -182,11 +182,12 @@ export class AppComponent {
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
-        this.JSONValuesList = [];
+        this.JSONValuesList = null;
         console.log(JSONList);
-        for(let i = 0; i < JSONList.length; i++){
+        /*for(let i = 0; i < JSONList.length; i++){
             this.JSONValuesList.push(JSONList[i]);
-        }
+        }*/
+        this.JSONValuesList = JSONList;
         console.log(this.JSONValuesList);
     }
 

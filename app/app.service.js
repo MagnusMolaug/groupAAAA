@@ -47,12 +47,20 @@ var AppService = (function () {
         //Delete a datastore object with the received ID
     };
     AppService.prototype.getNamespaces = function () {
+        //Returns all the registered namespaces.
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl, { headers: this.headers }).map(function (res) { return res.json(); });
     };
     AppService.prototype.getNamespaceKeys = function (namespace) {
+        //returns all the keys for a given namespace
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl + '/' + namespace, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    AppService.prototype.getJSONValues = function (namespace, key) {
+        //returns all the JSON values o a given key
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
     AppService.prototype.getKeyMetaData = function () {

@@ -28,6 +28,7 @@
 #body{
     background-color: #78909C;
 }
-.nameSpaceListObject{
+.ListObjects{
     color: #0ce3ac;
+    cursor: pointer;
 }

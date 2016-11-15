@@ -18,39 +18,15 @@ var AppComponent = (function () {
         this.appService = appService;
         //VARIABLES START
         this.dataStore = [];
-        this.keyList = [];
+        this.keyList = ['No namespace chosen'];
+        this.JSONValuesList = [];
         //private settings;
         this.model = new dataStore_1.DataStore('', '', true);
         this.loadObjectList();
     }
     AppComponent.prototype.loadObjectList = function () {
-        /*this.appService.loadDataStore()
-            .subscribe( res => this.updateObjectList(res.dataStores) );*/
-        //console.log(this.appService.getNamespaces());
+        //Loads a list of all registered namespaces
         var _this = this;
-        //var AAAA = this.appService.getNamespaces();
-        /*var settings = {
-            "async": true,
-            "crossDomain": true,
-            "url": "https://play.dhis2.org/demo/api/dataStore",
-            "method": "GET",
-            "headers": {
-                "authorization":"Basic YWRtaW46ZGlzdHJpY3Q=",
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "DELETE, HEAD, GET, OPTIONS, POST, PUT",
-                "Access-Control-Allow-Headers": "Content-Type, Content-Range, Content-Disposition, Content-Description",
-                "Access-Control-Max-Age": "1728000"
-            }
-        }*/
-        /*$.ajax(settings).done(function (response) {
-            console.log("A" + response);
-        });*/
-        //this.appService.getNamespaces();
-        /*
-        $.ajax(this.settings).done(function (response) {
-            return response;
-        });*/
         this.appService.getNamespaces().subscribe(function (res) { return _this.updateObjectList(res); });
     };
     AppComponent.prototype.updateObjectList = function (dataStore) {
@@ -60,17 +36,34 @@ var AppComponent = (function () {
             this.dataStore.push(dataStore[i]);
         }
     };
-    AppComponent.prototype.loadKeyList = function (nameSpace) {
-        //Gets a namespace and lists out all the keys for it
+    AppComponent.prototype.loadKeyList = function (namespace) {
+        //Gets a namespace and sends the list to the update keys function
         var _this = this;
-        this.appService.getNamespaceKeys(nameSpace).subscribe(function (res) { return _this.updateKeyList(res); });
+        this.selectedNamespace = namespace;
+        this.appService.getNamespaceKeys(namespace).subscribe(function (res) { return _this.updateKeyList(res); });
     };
     AppComponent.prototype.updateKeyList = function (keyList) {
+        //Updates all the keys in the key list to correspond to the selected namespace
         this.keyList = [];
         for (var i = 0; i < keyList.length; i++) {
             this.keyList.push(keyList[i]);
         }
         console.log(this.keyList);
+    };
+    AppComponent.prototype.loadJSONValues = function (key) {
+        //Gets the JSON values from a key and pass them tu the update JSON list function
+        var _this = this;
+        this.appService.getJSONValues(this.selectedNamespace, key).subscribe(function (res) { return _this.updateJSONList(res); });
+        this.selectedKey = key;
+    };
+    AppComponent.prototype.updateJSONList = function (JSONList) {
+        //Updates the JSON values list to contain values given
+        this.JSONValuesList = [];
+        console.log(JSONList);
+        for (var i = 0; i < JSONList.length; i++) {
+            this.JSONValuesList.push(JSONList[i]);
+        }
+        console.log(this.JSONValuesList);
     };
     AppComponent.prototype.newDataStore = function () {
         //Create a new object and save it to the datastore.
@@ -83,7 +76,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "\n    <div id=\"outerContainer\">\n        <div class=\"app\" id=\"mainContainer\">\n            <nav class=\"navbar navbar-default\">\n              <div class=\"container-fluid\">\n                <!-- Brand and toggle get grouped for better mobile display -->\n                <div class=\"navbar-header\">\n                  <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\" aria-expanded=\"false\">\n                    <span class=\"sr-only\">Toggle navigation</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                  </button>\n                  <a class=\"navbar-brand\" href=\"#\">Brand</a>\n                </div>\n            \n                <!-- Collect the nav links, forms, and other content for toggling -->\n                <div class=\"collapse navbar-collapse\" id=\"bs-example-navbar-collapse-1\">\n                  <ul class=\"nav navbar-nav\">\n                    <li class=\"active\"><a href=\"#\">Link <span class=\"sr-only\">(current)</span></a></li>\n                    <li><a href=\"#\">Link</a></li>\n                    <li class=\"dropdown\">\n                      <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">Dropdown <span class=\"caret\"></span></a>\n                      <ul class=\"dropdown-menu\">\n                        <li><a href=\"#\">Action</a></li>\n                        <li><a href=\"#\">Another action</a></li>\n                        <li><a href=\"#\">Something else here</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">Separated link</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">One more separated link</a></li>\n                      </ul>\n                    </li>\n                  </ul>\n                  <ul class=\"nav navbar-nav navbar-right\">\n                    <li><a href=\"#\">Link</a></li>\n                    <li class=\"dropdown\">\n                      <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">Dropdown <span class=\"caret\"></span></a>\n                      <ul class=\"dropdown-menu\">\n                        <li><a href=\"#\">Action</a></li>\n                        <li><a href=\"#\">Another action</a></li>\n                        <li><a href=\"#\">Something else here</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">Separated link</a></li>\n                      </ul>\n                    </li>\n                  </ul>\n                </div>\n              </div>\n            </nav>\n        \n        \n            <div id=\"dataStoreMainList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of objects\n                    </div>\n                    <!--<form class=\"\">\n                       <div class=\"form-group\">\n                            <input type=\"text\" class=\"form-control\" placeholder=\"Search\">\n                       </div>\n                        <!--button type=\"submit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-search\" aria-hidden=\"true\"></span></button>\n                      </form>-->\n                    <div class=\"list-group-item\"><input type=\"text\" class=\"form-control\" placeholder=\"Search for an object\"></div>\n                    <div class=\"list-group namespaceList\">\n                    \n                        <div class=\"list-group-item nameSpaceListObject\" *ngFor=\"let unit of dataStore;\" (click)=deleteUnit(organisationUnit.findIndex)>{{unit}}</div>\n                    \n                    </div>\n                </div>\n            </div>\n\n            <div id=\"dataStoreKeyList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of keys\n                    </div>\n                    <!--<form class=\"\">\n                       <div class=\"form-group\">\n                            <input type=\"text\" class=\"form-control\" placeholder=\"Search\">\n                       </div>\n                        <!--button type=\"submit\" class=\"btn btn-default\"><span class=\"glyphicon glyphicon-search\" aria-hidden=\"true\"></span></button>\n                      </form>-->\n                    <div class=\"list-group-item\"><input type=\"text\" class=\"form-control\" placeholder=\"Search for a key\"></div>\n                    <div class=\"list-group namespaceList\">\n                      <a href=\"#\" class=\"list-group-item active\">Key-1</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-2</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-3</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-4</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-5</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-6</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-7</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-8</a>\n                      <a href=\"#\" class=\"list-group-item\">Key-9</a>\n                    </div>\n                </div>\n            </div>\n            \n            <div id=\"dataStoreInfo\" class=\" col-md-6 col-sm-6\">\n                <div class=\"panel panel-default\">\n                  <div class=\"panel-heading\">\n                    <div class=\"row\">\n                      <div class=\"col-lg-6 h4\">\n                        Key: 5G6Jjgfjj\n                      </div>\n                      <div class=\"pull-right\">\n                        <a href=\"edit.html\" class=\"btn btn-primary\">Edit mode</a> <button class=\"btn btn-danger buttonLeftAdjust\">Delete object</button>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"panel-body\">\n                    <div class=\"JSONValues\">\n                        <div class=\"panel panel-default\">\n                            <div class=\"panel-heading\">JSON value 1</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                        <div class=\"panel panel-default\">\n                            <div class=\"panel-heading\">JSON value 2</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                        <div class=\"panel panel-default\">\n                            <div class=\"panel-heading\">JSON value 3</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                    </div>\n                  </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    \n"
+            template: "\n    <div id=\"outerContainer\">\n        <div class=\"app\" id=\"mainContainer\">\n            <nav class=\"navbar navbar-default\">\n              <div class=\"container-fluid\">\n                <!-- Brand and toggle get grouped for better mobile display -->\n                <div class=\"navbar-header\">\n                  <button type=\"button\" class=\"navbar-toggle collapsed\" data-toggle=\"collapse\" data-target=\"#bs-example-navbar-collapse-1\" aria-expanded=\"false\">\n                    <span class=\"sr-only\">Toggle navigation</span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                    <span class=\"icon-bar\"></span>\n                  </button>\n                  <a class=\"navbar-brand\" href=\"#\">Brand</a>\n                </div>\n            \n                <!-- Collect the nav links, forms, and other content for toggling -->\n                <div class=\"collapse navbar-collapse\" id=\"bs-example-navbar-collapse-1\">\n                  <ul class=\"nav navbar-nav\">\n                    <li class=\"active\"><a href=\"#\">Link <span class=\"sr-only\">(current)</span></a></li>\n                    <li><a href=\"#\">Link</a></li>\n                    <li class=\"dropdown\">\n                      <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">Dropdown <span class=\"caret\"></span></a>\n                      <ul class=\"dropdown-menu\">\n                        <li><a href=\"#\">Action</a></li>\n                        <li><a href=\"#\">Another action</a></li>\n                        <li><a href=\"#\">Something else here</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">Separated link</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">One more separated link</a></li>\n                      </ul>\n                    </li>\n                  </ul>\n                  <ul class=\"nav navbar-nav navbar-right\">\n                    <li><a href=\"#\">Link</a></li>\n                    <li class=\"dropdown\">\n                      <a href=\"#\" class=\"dropdown-toggle\" data-toggle=\"dropdown\" role=\"button\" aria-haspopup=\"true\" aria-expanded=\"false\">Dropdown <span class=\"caret\"></span></a>\n                      <ul class=\"dropdown-menu\">\n                        <li><a href=\"#\">Action</a></li>\n                        <li><a href=\"#\">Another action</a></li>\n                        <li><a href=\"#\">Something else here</a></li>\n                        <li role=\"separator\" class=\"divider\"></li>\n                        <li><a href=\"#\">Separated link</a></li>\n                      </ul>\n                    </li>\n                  </ul>\n                </div>\n              </div>\n            </nav>\n        \n        \n            <div id=\"dataStoreMainList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of objects\n                    </div>\n                    <div class=\"list-group-item\"><input type=\"text\" class=\"form-control\" placeholder=\"Search for an object\"></div>\n                    <div class=\"list-group namespaceList\">\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of dataStore;\" (click)=loadKeyList(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n\n            <div id=\"dataStoreKeyList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of keys\n                    </div>\n                    <div class=\"list-group-item\"><input type=\"text\" class=\"form-control\" placeholder=\"Search for a key\"></div>\n                    <div class=\"list-group namespaceList\">\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of keyList;\" (click)=loadJSONValues(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n            \n            <div id=\"dataStoreInfo\" class=\" col-md-6 col-sm-6\">\n                <div class=\"panel panel-default\">\n                  <div class=\"panel-heading\">\n                    <div class=\"row\">\n                      <div class=\"col-lg-6 h4\">\n                        Key: {{this.selectedKey}}\n                      </div>\n                      <div class=\"pull-right\">\n                        <a href=\"edit.html\" class=\"btn btn-primary\">Edit mode</a> <button class=\"btn btn-danger buttonLeftAdjust\">Delete object</button>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"panel-body\">\n                    <div class=\"JSONValues\">\n                        <div class=\"panel panel-default\" *ngFor=\"let unit of JSONValuesList;\">\n                            <div class=\"panel-heading\">{{unit}}</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                        <div class=\"panel panel-default\">\n                            <div class=\"panel-heading\">JSON value 2</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                        <div class=\"panel panel-default\">\n                            <div class=\"panel-heading\">JSON value 3</div>\n                            <div class=\"panel-body\">value</div>\n                        </div>\n                    </div>\n                  </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    \n"
         }), 
         __metadata('design:paramtypes', [app_service_1.AppService])
     ], AppComponent);

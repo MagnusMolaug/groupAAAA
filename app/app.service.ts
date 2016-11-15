@@ -56,7 +56,7 @@ export class AppService {
     }
 
     getNamespaces(): any{
-
+        //Returns all the registered namespaces.
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 
@@ -65,10 +65,18 @@ export class AppService {
     }
 
     getNamespaceKeys( namespace ): any{
-
+        //returns all the keys for a given namespace
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl + '/' + namespace, {headers: this.headers})
+            .map(res => res.json());
+    }
+
+    getJSONValues( namespace, key ): any{
+        //returns all the JSON values o a given key
+
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
             .map(res => res.json());
     }
 

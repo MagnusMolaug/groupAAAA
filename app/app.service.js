@@ -62,6 +62,17 @@ var AppService = (function () {
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
+        //if(this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers}))
+        //var res;
+        /*res = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
+            .map(res => res.toString());*/
+        //.map(res => res.json());
+        /*if(res.includes("https://")){
+            console.log(res);
+        }
+        else{
+            res.
+        }*/
     };
     AppService.prototype.getKeyMetaData = function () {
     };

@@ -96,7 +96,7 @@ import 'rxjs/Rx';
                     </div>
                   </div>
                   <div class="panel-body">
-                    <div class="JSONValues">
+                    <div class="JSONValues" id="JSONValues">
                         <div class="panel panel-default" *ngFor="let unit of JSONValuesList;">
                             <div class="panel-heading">{{unit}}</div>
                             <div class="panel-body">value</div>
@@ -124,7 +124,7 @@ export class AppComponent {
 
     public dataStore = [];
     public keyList = ['No namespace chosen'];
-    public JSONValuesList : JSON;
+    public JSONValuesList = [];
 
     public selectedNamespace;
     public selectedKey = "-";
@@ -175,19 +175,22 @@ export class AppComponent {
     loadJSONValues( key ): void{
         //Gets the JSON values from a key and pass them tu the update JSON list function
 
-        this.appService.getJSONValues(this.selectedNamespace, key).subscribe(res => this.updateJSONList(res));
         this.selectedKey = key;
+        this.appService.getJSONValues(this.selectedNamespace, key).subscribe(res => this.updateJSONList(res));
     }
 
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
+        //document.getElementById('JSONValues').innerHTML = JSON.stringify(JSONList);
+
         this.JSONValuesList = null;
         console.log(JSONList);
-        /*for(let i = 0; i < JSONList.length; i++){
+
+        for(let i = 0; i < JSONList.length; i++){
             this.JSONValuesList.push(JSONList[i]);
-        }*/
-        this.JSONValuesList = JSONList;
+        }
+        //this.JSONValuesList = JSONList;
         console.log(this.JSONValuesList);
     }
 

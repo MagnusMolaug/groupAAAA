@@ -1,15 +1,9 @@
 import { Injectable }    from '@angular/core';
-import {Headers, Http, Response} from '@angular/http';
+import {Headers, Http} from '@angular/http';
 import { DataStore } from './dataStore';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/Rx';
 
-
-class namespace{
-    content: string;
-
-}
 
 @Injectable()
 export class AppService {
@@ -21,11 +15,6 @@ export class AppService {
     private headers = new Headers({'Content-Type': 'application/json'});
 
     private basicAuth = `Basic ${btoa('admin:district')}`;
-
-    private res = "";
-
-    private namespace: namespace = new namespace();
-
 
     //VARIABLES END
 
@@ -39,7 +28,7 @@ export class AppService {
         this.headers.append('Authorization', this.basicAuth);
         return this.http
             .get(`${this.serverUrl}?paging=false&level=1`, {headers: this.headers})
-            //.map(res => res.json())
+            .map(res => res.json())
     }
 
     loadDataStore(): any {
@@ -48,7 +37,7 @@ export class AppService {
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http
             .get(`${this.serverUrl}?paging=false&level=1`, {headers: this.headers})
-            //.map(res => res.json())
+            .map(res => res.json())
     }
 
     deleteDataStoreObject(objectId): any {
@@ -79,22 +68,6 @@ export class AppService {
 
         return this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
             .map(res => res.json());
-        //if(this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers}))
-
-        //var res;
-
-        /*res = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
-            .map(res => res.toString());*/
-
-            //.map(res => res.json());
-
-        /*if(res.includes("https://")){
-            console.log(res);
-        }
-        else{
-            res.
-        }*/
-
     }
 
     getKeyMetaData(){

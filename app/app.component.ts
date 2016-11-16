@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { Headers, Http } from '@angular/http';
 import { AppService } from './app.service';
 import { DataStore } from './dataStore';
-import {Pipe, PipeTransform} from '@angular/core';
 
 import 'rxjs/Rx';
 
@@ -103,14 +101,6 @@ import 'rxjs/Rx';
                             <div class="panel-heading">{{unit}}</div>
                             <div class="panel-body">{{JSONValuesList[i]}}</div>
                         </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">JSON value 2</div>
-                            <div class="panel-body">value</div>
-                        </div>
-                        <div class="panel panel-default">
-                            <div class="panel-heading">JSON value 3</div>
-                            <div class="panel-body">value</div>
-                        </div>
                     </div>
                   </div>
                 </div>
@@ -132,7 +122,6 @@ export class AppComponent {
     public selectedNamespace;
     public selectedKey = "-";
 
-    private dataStores;
     //private settings;
 
     model = new DataStore('', '', true);
@@ -161,7 +150,7 @@ export class AppComponent {
     loadKeyList( namespace ): void{
         //Gets a namespace and sends the list to the update keys function
 
-        this.selectedNamespace = namespace
+        this.selectedNamespace = namespace;
         this.appService.getNamespaceKeys(namespace).subscribe(res => this.updateKeyList(res));
     }
 
@@ -185,14 +174,14 @@ export class AppComponent {
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
+        this.JSONKeysList = [];
+        this.JSONValuesList = [];
+
         for(var keyName in JSONList){
-            var key=keyName ;
             var value= JSONList[keyName ];
-            this.JSONKeysList.push(key);
+            this.JSONKeysList.push(keyName);
             this.JSONValuesList.push(JSON.stringify(value));
         }
-        console.log(this.JSONKeysList);
-        console.log(this.JSONValuesList);
     }
 
     newDataStore(): void {

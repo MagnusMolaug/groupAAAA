@@ -12,11 +12,6 @@ var core_1 = require('@angular/core');
 var http_1 = require('@angular/http');
 require('rxjs/add/operator/map');
 require('rxjs/Rx');
-var namespace = (function () {
-    function namespace() {
-    }
-    return namespace;
-}());
 var AppService = (function () {
     //VARIABLES END
     function AppService(http) {
@@ -25,23 +20,21 @@ var AppService = (function () {
         this.serverUrl = 'https://play.dhis2.org/test/api/dataStore';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.basicAuth = "Basic " + btoa('admin:district');
-        this.res = "";
-        this.namespace = new namespace();
     }
     AppService.prototype.saveDataStoreObject = function (dataStore) {
         //Receive a datastore object and saves it to the database.
         console.log(JSON.stringify(dataStore));
         this.headers.append('Authorization', this.basicAuth);
         return this.http
-            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers });
-        //.map(res => res.json())
+            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     AppService.prototype.loadDataStore = function () {
         //Return a list of all datastore objects in the database.
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http
-            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers });
-        //.map(res => res.json())
+            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers })
+            .map(function (res) { return res.json(); });
     };
     AppService.prototype.deleteDataStoreObject = function (objectId) {
         //Delete a datastore object with the received ID
@@ -62,17 +55,6 @@ var AppService = (function () {
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
-        //if(this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers}))
-        //var res;
-        /*res = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
-            .map(res => res.toString());*/
-        //.map(res => res.json());
-        /*if(res.includes("https://")){
-            console.log(res);
-        }
-        else{
-            res.
-        }*/
     };
     AppService.prototype.getKeyMetaData = function () {
     };

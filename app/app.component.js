@@ -12,6 +12,22 @@ var core_1 = require('@angular/core');
 var app_service_1 = require('./app.service');
 var dataStore_1 = require('./dataStore');
 require('rxjs/Rx');
+/*@Pipe({name: 'values'})
+export class ValuesPipe implements PipeTransform {
+    transform(value: any, args?: any[]): any[] {
+        let keyArr: any[] = Object.keys(value),
+        dataArr = [];
+
+        // loop through the object,
+        // pushing values to the return array
+        keyArr.forEach((key: any) => {
+            dataArr.push(value[key]);
+        });
+
+        // return the resulting array
+        return dataArr;
+    }
+}*/
 var AppComponent = (function () {
     //VARIABLES END
     function AppComponent(appService) {
@@ -67,6 +83,12 @@ var AppComponent = (function () {
         }
         //this.JSONValuesList = JSONList;
         console.log(this.JSONValuesList);
+        /*//Start Pipe Test
+        var dataArr = [];
+        let pipe : ValuesPipe;
+        dataArr = pipe(JSONList);
+
+        //End Pipe Test*/
     };
     AppComponent.prototype.newDataStore = function () {
         //Create a new object and save it to the datastore.

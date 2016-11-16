@@ -2,9 +2,27 @@ import { Component } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { AppService } from './app.service';
 import { DataStore } from './dataStore';
+import {Pipe, PipeTransform} from '@angular/core';
 
 import 'rxjs/Rx';
 
+
+/*@Pipe({name: 'values'})
+export class ValuesPipe implements PipeTransform {
+    transform(value: any, args?: any[]): any[] {
+        let keyArr: any[] = Object.keys(value),
+        dataArr = [];
+
+        // loop through the object,
+        // pushing values to the return array
+        keyArr.forEach((key: any) => {
+            dataArr.push(value[key]);
+        });
+
+        // return the resulting array
+        return dataArr;
+    }
+}*/
 @Component({
     selector: 'my-app',
     template: `
@@ -186,12 +204,18 @@ export class AppComponent {
 
         this.JSONValuesList = null;
         console.log(JSONList);
-
         for(let i = 0; i < JSONList.length; i++){
             this.JSONValuesList.push(JSONList[i]);
         }
         //this.JSONValuesList = JSONList;
         console.log(this.JSONValuesList);
+
+        /*//Start Pipe Test
+        var dataArr = [];
+        let pipe : ValuesPipe;
+        dataArr = pipe(JSONList);
+
+        //End Pipe Test*/
     }
 
     newDataStore(): void {

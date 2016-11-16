@@ -7,22 +7,6 @@ import {Pipe, PipeTransform} from '@angular/core';
 import 'rxjs/Rx';
 
 
-/*@Pipe({name: 'values'})
-export class ValuesPipe implements PipeTransform {
-    transform(value: any, args?: any[]): any[] {
-        let keyArr: any[] = Object.keys(value),
-        dataArr = [];
-
-        // loop through the object,
-        // pushing values to the return array
-        keyArr.forEach((key: any) => {
-            dataArr.push(value[key]);
-        });
-
-        // return the resulting array
-        return dataArr;
-    }
-}*/
 @Component({
     selector: 'my-app',
     template: `
@@ -115,9 +99,9 @@ export class ValuesPipe implements PipeTransform {
                   </div>
                   <div class="panel-body">
                     <div class="JSONValues" id="JSONValues">
-                        <div class="panel panel-default" *ngFor="let unit of JSONValuesList;">
+                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; trackBy:myTrackBy; let i=index">
                             <div class="panel-heading">{{unit}}</div>
-                            <div class="panel-body">value</div>
+                            <div class="panel-body">{{JSONValuesList[i]}}</div>
                         </div>
                         <div class="panel panel-default">
                             <div class="panel-heading">JSON value 2</div>
@@ -143,6 +127,7 @@ export class AppComponent {
     public dataStore = [];
     public keyList = ['No namespace chosen'];
     public JSONValuesList = [];
+    public JSONKeysList = [];
 
     public selectedNamespace;
     public selectedKey = "-";
@@ -200,22 +185,14 @@ export class AppComponent {
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
-        //document.getElementById('JSONValues').innerHTML = JSON.stringify(JSONList);
-
-        this.JSONValuesList = null;
-        console.log(JSONList);
-        for(let i = 0; i < JSONList.length; i++){
-            this.JSONValuesList.push(JSONList[i]);
+        for(var keyName in JSONList){
+            var key=keyName ;
+            var value= JSONList[keyName ];
+            this.JSONKeysList.push(key);
+            this.JSONValuesList.push(JSON.stringify(value));
         }
-        //this.JSONValuesList = JSONList;
+        console.log(this.JSONKeysList);
         console.log(this.JSONValuesList);
-
-        /*//Start Pipe Test
-        var dataArr = [];
-        let pipe : ValuesPipe;
-        dataArr = pipe(JSONList);
-
-        //End Pipe Test*/
     }
 
     newDataStore(): void {

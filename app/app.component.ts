@@ -88,15 +88,40 @@ import 'rxjs/Rx';
                   <div class="panel-heading">
                     <div class="row">
                       <div class="col-lg-6 h4">
-                        Key: {{this.selectedKey}}
+                        Key: {{selectedKey}}
                       </div>
                       <div class="pull-right">
-                        <a href="edit.html" class="btn btn-primary">Edit mode</a> <button class="btn btn-danger buttonLeftAdjust">Delete object</button>
+                        <button class="btn btn-warning buttonLeftAdjust">Raw text</button>
+                        <button class="btn btn-primary buttonLeftAdjust" ng-click="changeMode('EDIT')">Edit</button>
+                        <button class="btn btn-danger buttonLeftAdjust">Delete</button>
                       </div>
                     </div>
                   </div>
-                  <div class="panel-body">
-                    <div class="JSONValues" id="JSONValues">
+                  <div class="panel-body" ng-switch="mode">
+                    <div class="JSONValues" id="JSONValues" ng-switch-when="RAW">
+                        <div>{{stringValue}}</div>
+                    </div>
+                    <div class="JSONValues" id="JSONValues" ng-switch-when="EDIT">
+                    
+                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; trackBy:myTrackBy; let i=index">
+                          <div class="panel-heading">
+                            <div class="row">
+                              <div class="col-lg-6">
+                                <input class="form-control maxInputWidth" value="{{unit}}"/>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="panel-body">
+                            <div class="row">
+                              <div class="col-lg-6">
+                                <input class="form-control" value="{{JSONValuesList[i]}}"/>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    
+                    </div>
+                    <div class="JSONValues" id="JSONValues" ng-switch-default>
                         <div class="panel panel-default" *ngFor="let unit of JSONKeysList; trackBy:myTrackBy; let i=index">
                             <div class="panel-heading">{{unit}}</div>
                             <div class="panel-body">{{JSONValuesList[i]}}</div>
@@ -107,6 +132,20 @@ import 'rxjs/Rx';
             </div>
         </div>
     </div>
+    <div>
+    TODO list
+    
+    -distinguish between plain text and JSON (scan for c-brackets)
+Make raw text mode
+add support for parsing nested json objects
+
+LATER
+Make statistics page
+Make history page
+Upload to DHIS2 and make a namespace
+Save changes to keys
+Save history of changes
+</div>
     
 `
 })
@@ -118,9 +157,12 @@ export class AppComponent {
     public keyList = ['No namespace chosen'];
     public JSONValuesList = [];
     public JSONKeysList = [];
+    public stringValue = "";
 
     public selectedNamespace;
     public selectedKey = "-";
+
+    public mode = "JSON";
 
     //private settings;
 
@@ -131,6 +173,12 @@ export class AppComponent {
     constructor(
         private appService: AppService
     ) { this.loadObjectList() }
+
+    changeMode(mode : string): void {
+        //Changes the view mode
+
+        this.mode = mode;
+    }
 
     loadObjectList(): void {
         //Loads a list of all registered namespaces
@@ -151,6 +199,8 @@ export class AppComponent {
         //Gets a namespace and sends the list to the update keys function
 
         this.selectedNamespace = namespace;
+        this.JSONKeysList = [];
+        this.JSONValuesList = [];
         this.appService.getNamespaceKeys(namespace).subscribe(res => this.updateKeyList(res));
     }
 
@@ -176,11 +226,23 @@ export class AppComponent {
 
         this.JSONKeysList = [];
         this.JSONValuesList = [];
+        this.stringValue = "";
 
-        for(var keyName in JSONList){
-            var value= JSONList[keyName ];
-            this.JSONKeysList.push(keyName);
-            this.JSONValuesList.push(JSON.stringify(value));
+        if(typeof JSONList == "string"){
+            this.mode = "RAW";
+            this.stringValue = JSONList;
+            console.log(JSONList);
+        }
+        else{
+            this.mode = "JSON";
+
+
+
+            for(var keyName in JSONList){
+                var value= JSONList[keyName ];
+                this.JSONKeysList.push(keyName);
+                this.JSONValuesList.push(JSON.stringify(value));
+            }
         }
     }
 

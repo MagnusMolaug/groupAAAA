@@ -42,6 +42,12 @@ var AppService = (function () {
     AppService.prototype.getNamespaces = function () {
         //Returns all the registered namespaces.
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        //start video change to json
+        //DO NOT DELETE THIS CODE! IF YOU DO YOU WILL RECEIVE A BLANKET PARTY AT 3 AM
+        /*return this.http
+            .put(`${this.serverUrl}/social-media-video/hjcF14oVjo4`, '{"Link": "https://www.youtube.com/embed/gFnnNWC55Iw"}', {headers: this.headers})
+            .map( res => res.json() )*/
+        //end video change to json
         return this.http.get(this.serverUrl, { headers: this.headers }).map(function (res) { return res.json(); });
     };
     AppService.prototype.getNamespaceKeys = function (namespace) {

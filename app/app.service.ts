@@ -21,13 +21,13 @@ export class AppService {
     constructor(private http: Http) {
     }
 
-    saveDataStoreObject(dataStore: DataStore): any {
-        //Receive a datastore object and saves it to the database.
+    newKey(namespace : string, keyName : string, keyValue : string): any {
+        //Receive a namespace and a keyName and saves it to the database.
 
-        console.log(JSON.stringify(dataStore));
         this.headers.append('Authorization', this.basicAuth);
+
         return this.http
-            .get(`${this.serverUrl}?paging=false&level=1`, {headers: this.headers})
+            .post(`${this.serverUrl}/${namespace}/${keyName}`, `${keyValue}`,{headers: this.headers})
             .map(res => res.json())
     }
 

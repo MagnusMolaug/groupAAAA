@@ -21,12 +21,11 @@ var AppService = (function () {
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.basicAuth = "Basic " + btoa('admin:district');
     }
-    AppService.prototype.saveDataStoreObject = function (dataStore) {
-        //Receive a datastore object and saves it to the database.
-        console.log(JSON.stringify(dataStore));
+    AppService.prototype.newKey = function (namespace, keyName, keyValue) {
+        //Receive a namespace and a keyName and saves it to the database.
         this.headers.append('Authorization', this.basicAuth);
         return this.http
-            .get(this.serverUrl + "?paging=false&level=1", { headers: this.headers })
+            .post(this.serverUrl + "/" + namespace + "/" + keyName, "" + keyValue, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
     AppService.prototype.loadDataStore = function () {

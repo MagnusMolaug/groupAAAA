@@ -10,9 +10,10 @@ import 'rxjs/Rx';
     template: `
     <div id="outerContainer">
         <div class="app" id="mainContainer">
-            <nav class="navbar navbar-default">
+        
+        <!--NAVBAR-->
+            <!--nav-- class="navbar navbar-default">
               <div class="container-fluid">
-                <!-- Brand and toggle get grouped for better mobile display -->
                 <div class="navbar-header">
                   <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span>
@@ -23,7 +24,6 @@ import 'rxjs/Rx';
                   <a class="navbar-brand" href="#">Brand</a>
                 </div>
             
-                <!-- Collect the nav links, forms, and other content for toggling -->
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                   <ul class="nav navbar-nav">
                     <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
@@ -56,7 +56,8 @@ import 'rxjs/Rx';
                   </ul>
                 </div>
               </div>
-            </nav>
+            </nav-->
+            <!--NAVBAR-->
         
         
             <div id="dataStoreMainList" class=" col-md-3 col-sm-3">
@@ -75,9 +76,11 @@ import 'rxjs/Rx';
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         List of keys
+                        <button class="btn btn-success" style="float: right" (click)=newKeyButton()>Add</button>
                     </div>
                     <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for a key"></div>
                     <div class="list-group namespaceList">
+                        <div></div>
                         <div class="list-group-item ListObjects" *ngFor="let unit of keyList;" (click)=loadJSONValues(unit)>{{unit}}</div>
                     </div>
                 </div>
@@ -88,44 +91,62 @@ import 'rxjs/Rx';
                   <div class="panel-heading">
                     <div class="row">
                       <div class="col-lg-6 h4">
-                        Key: {{selectedKey}}
+                        {{selectedKey}}
                       </div>
                       <div class="pull-right">
-                        <button class="btn btn-warning buttonLeftAdjust">Raw text</button>
-                        <button class="btn btn-primary buttonLeftAdjust" ng-click="changeMode('EDIT')">Edit</button>
+                        <button class="btn btn-warning buttonLeftAdjust" (click)="changeMode('RAW')">Raw text</button>
+                        <button class="btn btn-primary buttonLeftAdjust" (click)="changeMode('EDIT')">Edit</button>
                         <button class="btn btn-danger buttonLeftAdjust">Delete</button>
                       </div>
                     </div>
                   </div>
-                  <div class="panel-body" ng-switch="mode">
-                    <div class="JSONValues" id="JSONValues" ng-switch-when="RAW">
-                        <div>{{stringValue}}</div>
-                    </div>
-                    <div class="JSONValues" id="JSONValues" ng-switch-when="EDIT">
-                    
-                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; trackBy:myTrackBy; let i=index">
+                  <div class="panel-body" ngSwitch="{{mode}}">
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSONEDIT'">
+                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; let i=index">
                           <div class="panel-heading">
                             <div class="row">
-                              <div class="col-lg-6">
+                              <div class="col-lg-10">
                                 <input class="form-control maxInputWidth" value="{{unit}}"/>
                               </div>
                             </div>
                           </div>
                           <div class="panel-body">
                             <div class="row">
-                              <div class="col-lg-6">
+                              <div class="col-lg-10">
                                 <input class="form-control" value="{{JSONValuesList[i]}}"/>
                               </div>
                             </div>
                           </div>
                         </div>
-                    
                     </div>
-                    <div class="JSONValues" id="JSONValues" ng-switch-default>
-                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; trackBy:myTrackBy; let i=index">
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSON'">
+                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; let i=index">
                             <div class="panel-heading">{{unit}}</div>
                             <div class="panel-body">{{JSONValuesList[i]}}</div>
                         </div>
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'RAWEDIT'">
+                        <div contenteditable="true" >{{stringValue}}</div>
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'NEWKEY'">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <input id="addKeyName" class="form-control" placeholder="Key Name"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-10">
+                                    <input id="addKeyValue" class="form-control" placeholder="Values"/>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-success" (click)="newKey()">Save</button>
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchDefault>
+                        <div style='word-break: break-all; word-wrap: break-word;'>{{stringValue}}</div>
                     </div>
                   </div>
                 </div>
@@ -133,6 +154,7 @@ import 'rxjs/Rx';
         </div>
     </div>
     <div>
+    <!--
     TODO list
     
     -distinguish between plain text and JSON (scan for c-brackets)
@@ -144,7 +166,7 @@ Make statistics page
 Make history page
 Upload to DHIS2 and make a namespace
 Save changes to keys
-Save history of changes
+Save history of changes-->
 </div>
     
 `
@@ -153,14 +175,14 @@ export class AppComponent {
 
     //VARIABLES START
 
-    public dataStore = [];
+    public dataStore = ['No registered namespaces'];
     public keyList = ['No namespace chosen'];
     public JSONValuesList = [];
     public JSONKeysList = [];
     public stringValue = "";
 
     public selectedNamespace;
-    public selectedKey = "-";
+    public selectedKey = "No key selected";
 
     public mode = "JSON";
 
@@ -174,10 +196,27 @@ export class AppComponent {
         private appService: AppService
     ) { this.loadObjectList() }
 
-    changeMode(mode : string): void {
-        //Changes the view mode
+    changeMode( newMode: string ): void {
+        //Changes the mode between edit and view
 
-        this.mode = mode;
+        if(newMode == 'RAW') {
+            this.mode = 'RAWEDIT';
+        }
+        else if(newMode == 'EDIT'){
+
+            switch( this.mode ){
+                case 'JSON': this.mode = 'JSONEDIT';
+                    break;
+                case 'RAW': this.mode = 'RAWEDIT'
+                    break;
+                case 'JSONEDIT': this.mode = 'JSON'
+                    break;
+                case 'RAWEDIT': this.mode = 'RAW'
+                    break;
+            }
+        }
+
+        return;
     }
 
     loadObjectList(): void {
@@ -217,7 +256,7 @@ export class AppComponent {
     loadJSONValues( key ): void{
         //Gets the JSON values from a key and pass them tu the update JSON list function
 
-        this.selectedKey = key;
+        this.selectedKey = "Key: " + key;
         this.appService.getJSONValues(this.selectedNamespace, key).subscribe(res => this.updateJSONList(res));
     }
 
@@ -229,14 +268,13 @@ export class AppComponent {
         this.stringValue = "";
 
         if(typeof JSONList == "string"){
-            this.mode = "RAW";
             this.stringValue = JSONList;
+            this.mode = "RAW";
             console.log(JSONList);
         }
         else{
-            this.mode = "JSON";
-
-
+            this.mode = "RAWJSON";
+            this.stringValue = JSON.stringify(JSONList);
 
             for(var keyName in JSONList){
                 var value= JSONList[keyName ];
@@ -246,10 +284,20 @@ export class AppComponent {
         }
     }
 
-    newDataStore(): void {
+    newKeyButton(): void{
+        this.mode = "NEWKEY";
+        this.selectedKey = "Add new key";
+    }
+
+    newKey(): void {
         //Create a new object and save it to the datastore.
 
-        this.appService.saveDataStoreObject(this.model)
+        var keyName = (<HTMLInputElement>document.getElementById("addKeyName")).value;
+        var keyValue = (<HTMLInputElement>document.getElementById("addKeyValue")).value;
+
+        console.log(keyName);
+        console.log(keyValue);
+        this.appService.newKey(this.selectedNamespace, keyName, keyValue)
             .subscribe(this.loadObjectList())
     }
 

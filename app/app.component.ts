@@ -159,7 +159,7 @@ import 'rxjs/Rx';
     <!--
     TODO list
     -distinguish between plain text and JSON (scan for c-brackets)
-    Make raw text mode
+    Make raw text mode 
     add support for parsing nested json objects
     
     LATER

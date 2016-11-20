@@ -56,7 +56,7 @@ var AppService = (function () {
             .map(function (res) { return res.json(); });
     };
     AppService.prototype.getJSONValues = function (namespace, key) {
-        //returns all the JSON values o a given key
+        //returns all the JSON values of a given key
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         return this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });

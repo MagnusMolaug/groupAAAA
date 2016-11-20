@@ -58,7 +58,7 @@ import 'rxjs/Rx';
               </div>
             </nav-->
             <!--NAVBAR-->
-        
+            <h1>DataStore Manager Application</h1>
         
             <div id="dataStoreMainList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
@@ -74,7 +74,7 @@ import 'rxjs/Rx';
 
             <div id="dataStoreKeyList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
-                    <div class="panel-heading">
+                    <div class="panel-heading h4">
                         List of keys
                         <button class="btn btn-success" style="float: right" (click)=newKeyButton()>Add</button>
                     </div>
@@ -94,9 +94,11 @@ import 'rxjs/Rx';
                         {{selectedKey}}
                       </div>
                       <div class="pull-right">
-                        <button class="btn btn-warning buttonLeftAdjust" (click)="changeMode('RAW')">Raw text</button>
+                        <!--<button class="btn btn-warning buttonLeftAdjust" (click)="changeMode('RAW')">Raw text</button>
                         <button class="btn btn-primary buttonLeftAdjust" (click)="changeMode('EDIT')">Edit</button>
-                        <button class="btn btn-danger buttonLeftAdjust">Delete</button>
+                        <button class="btn btn-danger buttonLeftAdjust">Delete</button>-->
+                        <button class="btn btn-danger buttonLeftAdjust">Cancel</button>
+                        <button class="btn btn-primary buttonLeftAdjust">Save changes</button>
                       </div>
                     </div>
                   </div>
@@ -146,7 +148,7 @@ import 'rxjs/Rx';
                         <button class="btn btn-success" (click)="newKey()">Save</button>
                     </div>
                     <div class="JSONValues" id="JSONValues" *ngSwitchDefault>
-                        <div style='word-break: break-all; word-wrap: break-word;'>{{stringValue}}</div>
+                        <textarea class="fullSize">{{stringValue}}</textarea>
                     </div>
                   </div>
                 </div>
@@ -156,17 +158,16 @@ import 'rxjs/Rx';
     <div>
     <!--
     TODO list
-    
     -distinguish between plain text and JSON (scan for c-brackets)
-Make raw text mode
-add support for parsing nested json objects
-
-LATER
-Make statistics page
-Make history page
-Upload to DHIS2 and make a namespace
-Save changes to keys
-Save history of changes-->
+    Make raw text mode
+    add support for parsing nested json objects
+    
+    LATER
+    Make statistics page
+    Make history page
+    Upload to DHIS2 and make a namespace
+    Save changes to keys
+    Save history of changes-->
 </div>
     
 `
@@ -207,11 +208,11 @@ export class AppComponent {
             switch( this.mode ){
                 case 'JSON': this.mode = 'JSONEDIT';
                     break;
-                case 'RAW': this.mode = 'RAWEDIT'
+                case 'RAW': this.mode = 'RAWEDIT';
                     break;
-                case 'JSONEDIT': this.mode = 'JSON'
+                case 'JSONEDIT': this.mode = 'JSON';
                     break;
-                case 'RAWEDIT': this.mode = 'RAW'
+                case 'RAWEDIT': this.mode = 'RAW';
                     break;
             }
         }
@@ -263,11 +264,11 @@ export class AppComponent {
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
-        this.JSONKeysList = [];
-        this.JSONValuesList = [];
+        /*this.JSONKeysList = [];
+        this.JSONValuesList = [];*/
         this.stringValue = "";
 
-        if(typeof JSONList == "string"){
+        /*if(typeof JSONList == "string"){
             this.stringValue = JSONList;
             this.mode = "RAW";
             console.log(JSONList);
@@ -281,7 +282,10 @@ export class AppComponent {
                 this.JSONKeysList.push(keyName);
                 this.JSONValuesList.push(JSON.stringify(value));
             }
-        }
+        }*/
+        this.mode = "RAWJSON";
+        this.stringValue = JSON.stringify(JSONList, null, 4);
+        console.log(this.stringValue);
     }
 
     newKeyButton(): void{

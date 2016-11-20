@@ -71,7 +71,7 @@ export class AppService {
     }
 
     getJSONValues( namespace, key ): any{
-        //returns all the JSON values o a given key
+        //returns all the JSON values of a given key
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 

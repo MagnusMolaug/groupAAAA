@@ -10,62 +10,15 @@ import 'rxjs/Rx';
     template: `
     <div id="outerContainer">
         <div class="app" id="mainContainer">
-        
-        <!--NAVBAR-->
-            <!--nav-- class="navbar navbar-default">
-              <div class="container-fluid">
-                <div class="navbar-header">
-                  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-                  <a class="navbar-brand" href="#">Brand</a>
-                </div>
-            
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                  <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                  <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                      <ul class="dropdown-menu">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                      </ul>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </nav-->
-            <!--NAVBAR-->
-            <h1>DataStore Manager Application</h1>
+               
+            <h3>DataStore Manager Application</h3>
         
             <div id="dataStoreMainList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         List of objects
                     </div>
-                    <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for an object"></div>
+                    <div class="list-group-item"><input type="text" [ngModel]="searchModel" id="namespaceSearch" class="form-control" placeholder="Search for an object" (ngModelChange)="namespaceSearch()"></div>
                     <div class="list-group namespaceList">
                         <div class="list-group-item ListObjects" *ngFor="let unit of dataStore;" (click)=loadKeyList(unit)>{{unit}}</div>
                     </div>
@@ -76,7 +29,7 @@ import 'rxjs/Rx';
                 <div class="panel panel-default">
                     <div class="panel-heading h4">
                         List of keys
-                        <button class="btn btn-success" style="float: right" (click)=newKeyButton()>Add</button>
+                        <button class="glyphicon glyphicon-plus" id="newKeyButton" style="float: right; visibility: hidden;" (click)=newKeyButton()></button>
                     </div>
                     <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for a key"></div>
                     <div class="list-group namespaceList">
@@ -97,13 +50,25 @@ import 'rxjs/Rx';
                         <!--<button class="btn btn-warning buttonLeftAdjust" (click)="changeMode('RAW')">Raw text</button>
                         <button class="btn btn-primary buttonLeftAdjust" (click)="changeMode('EDIT')">Edit</button>
                         <button class="btn btn-danger buttonLeftAdjust">Delete</button>-->
-                        <button class="btn btn-danger buttonLeftAdjust">Cancel</button>
-                        <button class="btn btn-primary buttonLeftAdjust">Save changes</button>
+                        <div ngSwitch="{{mode}}">
+                            <div *ngSwitchCase="'EDIT'">
+                                <button class="btn btn-primary buttonLeftAdjust" (click)="saveChanges()">Save changes</button>
+                                <button class="btn btn-warning buttonLeftAdjust" (click)="cancelEdit()">Cancel</button>
+                                <button class="btn btn-danger buttonLeftAdjust" (click)="deleteKey()">Delete key</button>
+                            </div>
+                            <div *ngSwitchCase="'NEWKEY'">
+                                <button class="btn btn-danger buttonLeftAdjust" (click)="cancelEdit()">Cancel</button>
+                                <button class="btn btn-primary buttonLeftAdjust" (click)="newKey()">Save key</button>
+                            </div>
+                            <div *ngSwitchDefault>
+                            
+                            </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                   <div class="panel-body" ngSwitch="{{mode}}">
-                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSONEDIT'">
+                    <!--div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSONEDIT'">
                         <div class="panel panel-default" *ngFor="let unit of JSONKeysList; let i=index">
                           <div class="panel-heading">
                             <div class="row">
@@ -129,26 +94,36 @@ import 'rxjs/Rx';
                     </div>
                     <div class="JSONValues" id="JSONValues" *ngSwitchCase="'RAWEDIT'">
                         <div contenteditable="true" >{{stringValue}}</div>
-                    </div>
+                    </div-->
                     <div class="JSONValues" id="JSONValues" *ngSwitchCase="'NEWKEY'">
                         <div class="panel-heading">
                             <div class="row">
-                                <div class="col-lg-10">
+                                <div class="col-lg-12">
                                     <input id="addKeyName" class="form-control" placeholder="Key Name"/>
                                 </div>
                             </div>
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-10">
-                                    <input id="addKeyValue" class="form-control" placeholder="Values"/>
+                                <div class="col-lg-12">
+                                    <textarea id="addKeyValue" class="fullSize" placeholder="Key Value"></textarea>
+                                    <!--/input id="addKeyValue" class="form-control" placeholder="Values"/-->
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-success" (click)="newKey()">Save</button>
+                        <!--button class="btn btn-success" (click)="newKey()">Save</button-->
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'EDIT'">
+                        <textarea id="editTextArea" class="fullSize">{{stringValue}}</textarea>
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'SAVED'">
+                        Changes Saved
+                    </div>
+                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'DELETED'">
+                        Key Deleted
                     </div>
                     <div class="JSONValues" id="JSONValues" *ngSwitchDefault>
-                        <textarea class="fullSize">{{stringValue}}</textarea>
+                    
                     </div>
                   </div>
                 </div>
@@ -197,7 +172,7 @@ export class AppComponent {
         private appService: AppService
     ) { this.loadObjectList() }
 
-    changeMode( newMode: string ): void {
+    /*changeMode( newMode: string ): void {
         //Changes the mode between edit and view
 
         if(newMode == 'RAW') {
@@ -218,7 +193,7 @@ export class AppComponent {
         }
 
         return;
-    }
+    }*/
 
     loadObjectList(): void {
         //Loads a list of all registered namespaces
@@ -238,9 +213,13 @@ export class AppComponent {
     loadKeyList( namespace ): void{
         //Gets a namespace and sends the list to the update keys function
 
+        document.getElementById("newKeyButton").style.visibility='visible';
+
+
         this.selectedNamespace = namespace;
         this.JSONKeysList = [];
         this.JSONValuesList = [];
+        this.mode = "NONE";
         this.appService.getNamespaceKeys(namespace).subscribe(res => this.updateKeyList(res));
     }
 
@@ -257,7 +236,7 @@ export class AppComponent {
     loadJSONValues( key ): void{
         //Gets the JSON values from a key and pass them tu the update JSON list function
 
-        this.selectedKey = "Key: " + key;
+        this.selectedKey = key;
         this.appService.getJSONValues(this.selectedNamespace, key).subscribe(res => this.updateJSONList(res));
     }
 
@@ -283,7 +262,7 @@ export class AppComponent {
                 this.JSONValuesList.push(JSON.stringify(value));
             }
         }*/
-        this.mode = "RAWJSON";
+        this.mode = "EDIT";
         this.stringValue = JSON.stringify(JSONList, null, 4);
         console.log(this.stringValue);
     }
@@ -303,10 +282,61 @@ export class AppComponent {
         console.log(keyValue);
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
             .subscribe(this.loadObjectList())
+
+        this.keyList[this.keyList.length] = keyName;
+
+        this.mode = "SAVED";
     }
 
-    deleteObject(event): void {
-        //Delete an object fromm the datastore.
+    cancelEdit(): void{
+        this.selectedKey = "No key selected";
+        this.stringValue = "";
+        this.JSONValuesList = [];
+        this.JSONKeysList = [];
+        this.mode = "NONE";
+    }
+
+    saveChanges(): void{
+        //Saves all changes done to a key
+
+        var content = (<HTMLInputElement>document.getElementById("editTextArea")).value;
+
+        this.appService.saveChanges(this.selectedNamespace, this.selectedKey, content)
+            .subscribe(this.loadObjectList())
+
+        this.mode = "SAVED";
+    }
+
+    deleteKey(): void {
+        //Delete a key from a namespace.
+
+        this.appService.deleteKey(this.selectedNamespace, this.selectedKey)
+            .subscribe(this.loadObjectList())
+
+        var index = this.keyList.indexOf(this.selectedKey, 0);
+        if (index > -1) {
+            this.keyList.splice(index, 1);
+        }
+
+        this.mode = "DELETED";
+    }
+
+
+    namespaceSearch(): void{
+        console.log("change");
+        let searchNamespaceList = this.dataStore;
+        let namespaceSearch = (<HTMLInputElement>document.getElementById("namespaceSearch")).value;
+
+        namespaceSearch = "/" + namespaceSearch + "/";
+
+        for(let i in searchNamespaceList){
+            if(searchNamespaceList[i].search(namespaceSearch) != -1){
+                console.log(i);
+                console.log(searchNamespaceList[i]);
+                //searchNamespaceList.splice(i, 1);
+            }
+        }
+
     }
 
 }

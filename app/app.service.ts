@@ -79,6 +79,24 @@ export class AppService {
             .map(res => res.json());
     }
 
+    saveChanges(namespace: string, key: string, content: string): any{
+        //Saves changes to a value for a selected key
+
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+
+        return this.http.put(this.serverUrl + '/' + namespace + '/' + key, `${content}` ,{headers: this.headers})
+            .map(res => res.json());
+    }
+
+    deleteKey(namespace: string, key: string): any{
+        //Delete given key from the given namespace.
+
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+
+        return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
+            .map(res => res.json());
+    }
+
     getKeyMetaData(){
 
     }

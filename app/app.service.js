@@ -61,6 +61,18 @@ var AppService = (function () {
         return this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
+    AppService.prototype.saveChanges = function (namespace, key, content) {
+        //Saves changes to a value for a selected key
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.put(this.serverUrl + '/' + namespace + '/' + key, "" + content, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
+    AppService.prototype.deleteKey = function (namespace, key) {
+        //Delete given key from the given namespace.
+        this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
+            .map(function (res) { return res.json(); });
+    };
     AppService.prototype.getKeyMetaData = function () {
     };
     AppService.prototype.addNamespaceKey = function () {

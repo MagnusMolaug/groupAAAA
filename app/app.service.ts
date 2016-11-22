@@ -3,6 +3,7 @@ import {Headers, Http} from '@angular/http';
 import { DataStore } from './dataStore';
 import 'rxjs/add/operator/map';
 import 'rxjs/Rx';
+import {error} from "util";
 
 
 @Injectable()
@@ -11,6 +12,7 @@ export class AppService {
     //VARIABLES START
 
     private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+    private historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
 
     private headers = new Headers({'Content-Type': 'application/json'});
 
@@ -84,10 +86,63 @@ export class AppService {
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 
-        return this.http.put(this.serverUrl + '/' + namespace + '/' + key, `${content}` ,{headers: this.headers})
+        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
+            //.map(res => res.json());
+
+        var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, `${content}` ,{headers: this.headers})
             .map(res => res.json());
+
+        var oldContent = oldContentObs.subscribe(res => this.historyChange(namespace, key, JSON.stringify(res.json())));
+
+        return res;
+    }
+    historyChange(namespace: string, key: string, oldContent: string): any{
+        //Saves changes to the history
+
+        var historyKey = namespace + ":" + key;
+        var date = new Date();
+        console.log(date);
+
+        console.log(this.historyUrl + '/' + historyKey);
+        console.log(oldContent);
+
+        this.headers.append('Authorization', this.basicAuth);
+
+        var exist = true;
+
+        var get = this.http
+            .get(`${this.historyUrl}/${historyKey}`, {headers: this.headers})
+            .map(res => {
+                // If request fails, throw an Error that will be caught
+                if(res.status < 200 || res.status >= 300) {
+                    exist = false;
+                }
+                // If everything went fine, return the response
+                else {
+                    exist = true;
+                }
+            })
+            .subscribe(
+                (data) => {
+                    console.log("Change existing history key");
+                    console.log("AAAA", data)
+                    var res = this.http.put(this.historyUrl + '/' + historyKey, `${oldContent}`, {headers: this.headers})
+                        .map(res => res.json());
+
+                    return res.subscribe(res => console.log(JSON.stringify(res)))
+                },
+                (err) => {
+                    console.log("Adding new history key");
+                    var res = this.http
+                        .post(`${this.historyUrl}/${historyKey}`, `${oldContent}`,{headers: this.headers})
+                        .map(res => res.json());
+
+                    return res.subscribe(res => console.log(JSON.stringify(res)));
+                });
+
     }
 
+    
     deleteKey(namespace: string, key: string): any{
         //Delete given key from the given namespace.
 
@@ -96,21 +151,10 @@ export class AppService {
         return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
             .map(res => res.json());
     }
-
-    getKeyMetaData(){
-
-    }
-
-    addNamespaceKey(){
+    historyDelete(){
 
     }
 
-    changeKeyMetadata(){
-
-    }
-
-    deleteNamespaceKey(){
-
-    }
+    
 
 }

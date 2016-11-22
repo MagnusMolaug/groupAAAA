@@ -215,8 +215,8 @@ export class AppComponent {
 
         document.getElementById("newKeyButton").style.visibility='visible';
 
-
         this.selectedNamespace = namespace;
+        this.selectedKey = "No key selected";
         this.JSONKeysList = [];
         this.JSONValuesList = [];
         this.mode = "NONE";
@@ -230,7 +230,6 @@ export class AppComponent {
         for(let i = 0; i < keyList.length; i++){
             this.keyList.push(keyList[i]);
         }
-        console.log(this.keyList);
     }
 
     loadJSONValues( key ): void{
@@ -264,7 +263,6 @@ export class AppComponent {
         }*/
         this.mode = "EDIT";
         this.stringValue = JSON.stringify(JSONList, null, 4);
-        console.log(this.stringValue);
     }
 
     newKeyButton(): void{
@@ -278,8 +276,6 @@ export class AppComponent {
         var keyName = (<HTMLInputElement>document.getElementById("addKeyName")).value;
         var keyValue = (<HTMLInputElement>document.getElementById("addKeyValue")).value;
 
-        console.log(keyName);
-        console.log(keyValue);
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
             .subscribe(this.loadObjectList())
 

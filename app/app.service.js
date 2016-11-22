@@ -18,6 +18,7 @@ var AppService = (function () {
         this.http = http;
         //VARIABLES START
         this.serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+        this.historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.basicAuth = "Basic " + btoa('admin:district');
     }
@@ -63,9 +64,49 @@ var AppService = (function () {
     };
     AppService.prototype.saveChanges = function (namespace, key, content) {
         //Saves changes to a value for a selected key
+        var _this = this;
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        return this.http.put(this.serverUrl + '/' + namespace + '/' + key, "" + content, { headers: this.headers })
+        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers });
+        //.map(res => res.json());
+        var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, "" + content, { headers: this.headers })
             .map(function (res) { return res.json(); });
+        var oldContent = oldContentObs.subscribe(function (res) { return _this.historyChange(namespace, key, JSON.stringify(res.json())); });
+        return res;
+    };
+    AppService.prototype.historyChange = function (namespace, key, oldContent) {
+        //Saves changes to the history
+        var _this = this;
+        var historyKey = namespace + ":" + key;
+        var date = new Date();
+        console.log(date);
+        console.log(this.historyUrl + '/' + historyKey);
+        console.log(oldContent);
+        this.headers.append('Authorization', this.basicAuth);
+        var exist = true;
+        var get = this.http
+            .get(this.historyUrl + "/" + historyKey, { headers: this.headers })
+            .map(function (res) {
+            // If request fails, throw an Error that will be caught
+            if (res.status < 200 || res.status >= 300) {
+                exist = false;
+            }
+            else {
+                exist = true;
+            }
+        })
+            .subscribe(function (data) {
+            console.log("Change existing history key");
+            console.log("AAAA", data);
+            var res = _this.http.put(_this.historyUrl + '/' + historyKey, "" + oldContent, { headers: _this.headers })
+                .map(function (res) { return res.json(); });
+            return res.subscribe(function (res) { return console.log(JSON.stringify(res)); });
+        }, function (err) {
+            console.log("Adding new history key");
+            var res = _this.http
+                .post(_this.historyUrl + "/" + historyKey, "" + oldContent, { headers: _this.headers })
+                .map(function (res) { return res.json(); });
+            return res.subscribe(function (res) { return console.log(JSON.stringify(res)); });
+        });
     };
     AppService.prototype.deleteKey = function (namespace, key) {
         //Delete given key from the given namespace.
@@ -73,13 +114,7 @@ var AppService = (function () {
         return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };
-    AppService.prototype.getKeyMetaData = function () {
-    };
-    AppService.prototype.addNamespaceKey = function () {
-    };
-    AppService.prototype.changeKeyMetadata = function () {
-    };
-    AppService.prototype.deleteNamespaceKey = function () {
+    AppService.prototype.historyDelete = function () {
     };
     AppService = __decorate([
         core_1.Injectable(), 

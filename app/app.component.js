@@ -67,6 +67,7 @@ var AppComponent = (function () {
         var _this = this;
         document.getElementById("newKeyButton").style.visibility = 'visible';
         this.selectedNamespace = namespace;
+        this.selectedKey = "No key selected";
         this.JSONKeysList = [];
         this.JSONValuesList = [];
         this.mode = "NONE";
@@ -78,7 +79,6 @@ var AppComponent = (function () {
         for (var i = 0; i < keyList.length; i++) {
             this.keyList.push(keyList[i]);
         }
-        console.log(this.keyList);
     };
     AppComponent.prototype.loadJSONValues = function (key) {
         //Gets the JSON values from a key and pass them tu the update JSON list function
@@ -108,7 +108,6 @@ var AppComponent = (function () {
         }*/
         this.mode = "EDIT";
         this.stringValue = JSON.stringify(JSONList, null, 4);
-        console.log(this.stringValue);
     };
     AppComponent.prototype.newKeyButton = function () {
         this.mode = "NEWKEY";
@@ -118,8 +117,6 @@ var AppComponent = (function () {
         //Create a new object and save it to the datastore.
         var keyName = document.getElementById("addKeyName").value;
         var keyValue = document.getElementById("addKeyValue").value;
-        console.log(keyName);
-        console.log(keyValue);
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
             .subscribe(this.loadObjectList());
         this.keyList[this.keyList.length] = keyName;

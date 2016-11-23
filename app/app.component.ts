@@ -16,11 +16,11 @@ import 'rxjs/Rx';
             <div id="dataStoreMainList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        List of objects
+                        List of namespaces
                     </div>
-                    <div class="list-group-item"><input type="text" [ngModel]="searchModel" id="namespaceSearch" class="form-control" placeholder="Search for an object" (ngModelChange)="namespaceSearch()"></div>
+                    <div class="list-group-item"><input type="text" [ngModel]="searchModel" id="namespaceSearch" class="form-control" placeholder="Search for namespaces" (ngModelChange)="namespaceSearch()"></div>
                     <div class="list-group namespaceList">
-                        <div class="list-group-item ListObjects" *ngFor="let unit of dataStore;" (click)=loadKeyList(unit)>{{unit}}</div>
+                        <div class="list-group-item ListObjects" *ngFor="let unit of searchableDataStore;" (click)=loadKeyList(unit)>{{unit}}</div>
                     </div>
                 </div>
             </div>
@@ -31,10 +31,10 @@ import 'rxjs/Rx';
                         List of keys
                         <button class="glyphicon glyphicon-plus" id="newKeyButton" style="float: right; visibility: hidden;" (click)=newKeyButton()></button>
                     </div>
-                    <div class="list-group-item"><input type="text" class="form-control" placeholder="Search for a key"></div>
+                    <div class="list-group-item"><input type="text" [ngModel]="searchModel2" id="keySearch" class="form-control" placeholder="Search for a key" (ngModelChange)="keySearch()"></div>
                     <div class="list-group namespaceList">
                         <div></div>
-                        <div class="list-group-item ListObjects" *ngFor="let unit of keyList;" (click)=loadJSONValues(unit)>{{unit}}</div>
+                        <div class="list-group-item ListObjects" *ngFor="let unit of searchableKeyList;" (click)=loadJSONValues(unit)>{{unit}}</div>
                     </div>
                 </div>
             </div>
@@ -151,8 +151,10 @@ export class AppComponent {
 
     //VARIABLES START
 
-    public dataStore = ['No registered namespaces'];
-    public keyList = ['No namespace chosen'];
+    public dataStore = [];
+    public searchableDataStore = ['No registered namespaces'];
+    public keyList = [];
+    public searchableKeyList = ['No namespace chosen'];
     public JSONValuesList = [];
     public JSONKeysList = [];
     public stringValue = "";
@@ -208,6 +210,7 @@ export class AppComponent {
         for(let i = 0; i < dataStore.length; i++){
             this.dataStore.push(dataStore[i]);
         }
+        this.searchableDataStore = dataStore;
     }
 
     loadKeyList( namespace ): void{
@@ -230,6 +233,7 @@ export class AppComponent {
         for(let i = 0; i < keyList.length; i++){
             this.keyList.push(keyList[i]);
         }
+        this.searchableKeyList = keyList;
     }
 
     loadJSONValues( key ): void{
@@ -319,20 +323,41 @@ export class AppComponent {
 
 
     namespaceSearch(): void{
-        console.log("change");
-        let searchNamespaceList = this.dataStore;
+        this.searchableDataStore = this.dataStore;
+        let searchNamespaceList = this.searchableDataStore;
         let namespaceSearch = (<HTMLInputElement>document.getElementById("namespaceSearch")).value;
-
-        namespaceSearch = "/" + namespaceSearch + "/";
+        var temp = [];
 
         for(let i in searchNamespaceList){
-            if(searchNamespaceList[i].search(namespaceSearch) != -1){
-                console.log(i);
-                console.log(searchNamespaceList[i]);
-                //searchNamespaceList.splice(i, 1);
+            if(namespaceSearch){
+                if((searchNamespaceList[i].toLowerCase()).includes(namespaceSearch.toLowerCase())){
+                    temp.push(searchNamespaceList[i]);
+                }
+            }
+            else {
+                temp = this.dataStore;
             }
         }
+        this.searchableDataStore = temp;
+    }
 
+    keySearch(): void{
+        this.searchableKeyList = this.keyList;
+        let searchKeyList = this.searchableKeyList;
+        let keySearch = (<HTMLInputElement>document.getElementById("keySearch")).value;
+        var temp = [];
+
+        for(let i in searchKeyList){
+            if(keySearch){
+                if((searchKeyList[i].toLowerCase()).includes(keySearch.toLowerCase())){
+                    temp.push(searchKeyList[i]);
+                }
+            }
+            else {
+                temp = this.keyList;
+            }
+        }
+        this.searchableKeyList = temp;
     }
 
 }

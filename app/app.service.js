@@ -70,10 +70,10 @@ var AppService = (function () {
         //.map(res => res.json());
         var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, "" + content, { headers: this.headers })
             .map(function (res) { return res.json(); });
-        var oldContent = oldContentObs.subscribe(function (res) { return _this.historyChange(namespace, key, JSON.stringify(res.json())); });
+        oldContentObs.subscribe(function (res) { return _this.historyChange(namespace, key, JSON.stringify(res.json()), "UPDATE"); });
         return res;
     };
-    AppService.prototype.historyChange = function (namespace, key, oldContent) {
+    AppService.prototype.historyChange = function (namespace, key, oldContent, type) {
         //Saves changes to the history
         var _this = this;
         var historyKey = namespace + ":" + key;
@@ -83,7 +83,6 @@ var AppService = (function () {
         console.log(oldContent);
         this.headers.append('Authorization', this.basicAuth);
         var exist = true;
-        var type = "UPDATE";
         var historyContent = [];
         var stringJSON = "";
         var get = this.http
@@ -91,12 +90,9 @@ var AppService = (function () {
             .map(function (res) {
             console.log(JSON.stringify(res.json()));
             historyContent = res.json();
-            var historyjson = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
-            historyContent.push(historyjson);
+            var historyJSON = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
+            historyContent.push(historyJSON);
             stringJSON = JSON.stringify(historyContent);
-            /*console.log("OLDCONTENT");
-            console.log(oldContent);
-            console.log(stringJSON);*/
         })
             .subscribe(function (data) {
             console.log("Change existing history key");
@@ -106,15 +102,22 @@ var AppService = (function () {
             return res.subscribe(function (res) { return console.log(JSON.stringify(res)); });
         }, function (err) {
             console.log("Adding new history key");
+            historyContent = [];
+            var historyJSON = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
+            historyContent.push(historyJSON);
+            stringJSON = JSON.stringify(historyContent);
             var res = _this.http
-                .post(_this.historyUrl + "/" + historyKey, "" + oldContent, { headers: _this.headers })
+                .post(_this.historyUrl + "/" + historyKey, "" + stringJSON, { headers: _this.headers })
                 .map(function (res) { return res.json(); });
             return res.subscribe(function (res) { return console.log(JSON.stringify(res)); });
         });
     };
     AppService.prototype.deleteKey = function (namespace, key) {
         //Delete given key from the given namespace.
+        var _this = this;
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers });
+        oldContentObs.subscribe(function (res) { return _this.historyChange(namespace, key, JSON.stringify(res.json()), "DELETE"); });
         return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers })
             .map(function (res) { return res.json(); });
     };

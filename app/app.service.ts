@@ -92,11 +92,11 @@ export class AppService {
         var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, `${content}` ,{headers: this.headers})
             .map(res => res.json());
 
-        var oldContent = oldContentObs.subscribe(res => this.historyChange(namespace, key, JSON.stringify(res.json())));
+        oldContentObs.subscribe(res => this.historyChange(namespace, key, JSON.stringify(res.json()), "UPDATE"));
 
         return res;
     }
-    historyChange(namespace: string, key: string, oldContent: string): any{
+    historyChange(namespace: string, key: string, oldContent: string, type: string): any{
         //Saves changes to the history
 
         var historyKey = namespace + ":" + key;
@@ -109,7 +109,6 @@ export class AppService {
         this.headers.append('Authorization', this.basicAuth);
 
         var exist = true;
-        var type = "UPDATE";
         var historyContent = [];
         var stringJSON = "";
 
@@ -121,12 +120,9 @@ export class AppService {
 
                 historyContent = res.json();
 
-                var historyjson = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
-                historyContent.push(historyjson);
+                var historyJSON = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
+                historyContent.push(historyJSON);
                 stringJSON = JSON.stringify(historyContent);
-                /*console.log("OLDCONTENT");
-                console.log(oldContent);
-                console.log(stringJSON);*/
             })
             .subscribe(
                 (data) => {
@@ -140,8 +136,14 @@ export class AppService {
                 },
                 (err) => {
                     console.log("Adding new history key");
+
+                    historyContent = [];
+                    var historyJSON = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
+                    historyContent.push(historyJSON);
+                    stringJSON = JSON.stringify(historyContent);
+
                     var res = this.http
-                        .post(`${this.historyUrl}/${historyKey}`, `${oldContent}`,{headers: this.headers})
+                        .post(`${this.historyUrl}/${historyKey}`, `${stringJSON}`,{headers: this.headers})
                         .map(res => res.json());
 
                     return res.subscribe(res => console.log(JSON.stringify(res)));
@@ -155,6 +157,9 @@ export class AppService {
         //Delete given key from the given namespace.
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
+
+        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
+        oldContentObs.subscribe(res => this.historyChange(namespace, key, JSON.stringify(res.json()), "DELETE"));
 
         return this.http.delete(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
             .map(res => res.json());

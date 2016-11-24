@@ -83,21 +83,25 @@ var AppService = (function () {
         console.log(oldContent);
         this.headers.append('Authorization', this.basicAuth);
         var exist = true;
+        var type = "UPDATE";
+        var historyContent = [];
+        var stringJSON = "";
         var get = this.http
             .get(this.historyUrl + "/" + historyKey, { headers: this.headers })
             .map(function (res) {
-            // If request fails, throw an Error that will be caught
-            if (res.status < 200 || res.status >= 300) {
-                exist = false;
-            }
-            else {
-                exist = true;
-            }
+            console.log(JSON.stringify(res.json()));
+            historyContent = res.json();
+            var historyjson = JSON.parse('{"DATE":"' + date.toUTCString() + '","TYPE":"' + type + '","CONTENT":' + oldContent + '}');
+            historyContent.push(historyjson);
+            stringJSON = JSON.stringify(historyContent);
+            /*console.log("OLDCONTENT");
+            console.log(oldContent);
+            console.log(stringJSON);*/
         })
             .subscribe(function (data) {
             console.log("Change existing history key");
-            console.log("AAAA", data);
-            var res = _this.http.put(_this.historyUrl + '/' + historyKey, "" + oldContent, { headers: _this.headers })
+            console.log("New content: ", historyContent);
+            var res = _this.http.put(_this.historyUrl + '/' + historyKey, "" + stringJSON, { headers: _this.headers })
                 .map(function (res) { return res.json(); });
             return res.subscribe(function (res) { return console.log(JSON.stringify(res)); });
         }, function (err) {

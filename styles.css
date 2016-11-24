@@ -29,7 +29,12 @@
     /*background-color: #78909C;*/
 }
 .ListObjects{
-    color: #0ce3ac;
+    color: #3162C5;
+    cursor: pointer;
+}
+.ListObjects:hover{
+    background: lightblue;
+    /*color: #0ce3ac;*/
     cursor: pointer;
 }
 .fullSize{

@@ -27,7 +27,7 @@ import 'rxjs/Rx';
 
             <div id="dataStoreKeyList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
-                    <div class="panel-heading h4">
+                    <div class="panel-heading">
                         List of keys
                         <button class="glyphicon glyphicon-plus" id="newKeyButton" style="float: right; visibility: hidden;" (click)=newKeyButton()></button>
                     </div>

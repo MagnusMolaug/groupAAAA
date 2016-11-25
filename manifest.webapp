@@ -1,0 +1,23 @@
+{
+    "version": "1.0",
+    "name": "Datastore Manager Application",
+    "description": "Application for managing the content of the datastore namespaces",
+    "launch_path": "/index.html",
+    "appType": "APP",
+    "icons": {
+        "16": "/img/icons/mortar-16.png",
+        "48": "/img/icons/mortar-48.png",
+        "128": "/img/icons/mortar-128.png"
+    },
+    "developer": {
+        "name": "Group AAAA",
+        "url": "http://example.com"
+    },
+    "default_locale": "en",
+    "activities": {
+        "dhis": {
+            "href": "https://play.dhis2.org/test",
+            "namespace": "DSM_HISTORY"
+        }
+    }
+}

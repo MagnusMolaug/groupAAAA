@@ -11,7 +11,8 @@ export class AppService {
 
     //VARIABLES START
 
-    private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+    //private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+    private serverUrl = 'k';
     private historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
 
     private headers = new Headers({'Content-Type': 'application/json'});
@@ -21,6 +22,23 @@ export class AppService {
     //VARIABLES END
 
     constructor(private http: Http) {
+
+        /*$.getJSON( "manifest.webapp", function( json ) {
+            console.log("f: ", json);
+            this.serverUrl = JSON.stringify(json.activities.dhis.href) + "/api/dataStore";
+        } );*/
+
+
+        this.http.get('manifest.webapp').map(res => res.json()).subscribe((manifest_data) => {
+            console.log(JSON.stringify(manifest_data.activities.dhis.href));
+            this.serverUrl = JSON.stringify(manifest_data.activities.dhis.href);
+        });
+        console.log(this.serverUrl);
+        console.log(this.serverUrl);
+    }
+
+    setUrl(url: string){
+        this.serverUrl = url + "/api/dataStore";
     }
 
     newKey(namespace : string, keyName : string, keyValue : string): any {

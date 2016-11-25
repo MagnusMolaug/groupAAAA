@@ -15,13 +15,28 @@ require('rxjs/Rx');
 var AppService = (function () {
     //VARIABLES END
     function AppService(http) {
+        /*$.getJSON( "manifest.webapp", function( json ) {
+            console.log("f: ", json);
+            this.serverUrl = JSON.stringify(json.activities.dhis.href) + "/api/dataStore";
+        } );*/
+        var _this = this;
         this.http = http;
         //VARIABLES START
-        this.serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+        //private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
+        this.serverUrl = 'k';
         this.historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.basicAuth = "Basic " + btoa('admin:district');
+        this.http.get('manifest.webapp').map(function (res) { return res.json(); }).subscribe(function (manifest_data) {
+            console.log(JSON.stringify(manifest_data.activities.dhis.href));
+            _this.serverUrl = JSON.stringify(manifest_data.activities.dhis.href);
+        });
+        console.log(this.serverUrl);
+        console.log(this.serverUrl);
     }
+    AppService.prototype.setUrl = function (url) {
+        this.serverUrl = url + "/api/dataStore";
+    };
     AppService.prototype.newKey = function (namespace, keyName, keyValue) {
         //Receive a namespace and a keyName and saves it to the database.
         this.headers.append('Authorization', this.basicAuth);

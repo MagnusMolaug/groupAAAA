@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AppService } from './app.service';
 import { DataStore } from './dataStore';
+import {Headers, Http} from '@angular/http';
 
 import 'rxjs/Rx';
 
@@ -164,15 +165,23 @@ export class AppComponent {
 
     public mode = "JSON";
 
+    public tmpurl = "";
     //private settings;
 
     model = new DataStore('', '', true);
 
     //VARIABLES END
 
-    constructor(
-        private appService: AppService
-    ) { this.loadObjectList() }
+    constructor(private appService: AppService, private http1: Http) {
+        //let http1: Http;
+        this.http1.get('manifest.webapp').map(res => res.json()).subscribe((manifest_data) => {
+            console.log("a", JSON.stringify(manifest_data.activities.dhis.href));
+            this.tmpurl = manifest_data.activities.dhis.href;
+            console.log("b",manifest_data.activities.dhis.href);
+            this.loadObjectList(this.tmpurl);
+        });
+
+    }
 
     /*changeMode( newMode: string ): void {
         //Changes the mode between edit and view
@@ -197,9 +206,9 @@ export class AppComponent {
         return;
     }*/
 
-    loadObjectList(): void {
+    loadObjectList(url: string): void {
         //Loads a list of all registered namespaces
-
+        this.appService.setUrl(url);
         this.appService.getNamespaces().subscribe(res => this.updateObjectList(res));
     }
 
@@ -281,7 +290,7 @@ export class AppComponent {
         var keyValue = (<HTMLInputElement>document.getElementById("addKeyValue")).value;
 
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
-            .subscribe(this.loadObjectList())
+            .subscribe(this.loadObjectList(this.tmpurl))
 
         this.keyList[this.keyList.length] = keyName;
 
@@ -302,7 +311,7 @@ export class AppComponent {
         var content = (<HTMLInputElement>document.getElementById("editTextArea")).value;
 
         this.appService.saveChanges(this.selectedNamespace, this.selectedKey, content)
-            .subscribe(this.loadObjectList())
+            .subscribe(this.loadObjectList(this.tmpurl))
 
         this.mode = "SAVED";
     }
@@ -311,7 +320,7 @@ export class AppComponent {
         //Delete a key from a namespace.
 
         this.appService.deleteKey(this.selectedNamespace, this.selectedKey)
-            .subscribe(this.loadObjectList())
+            .subscribe(this.loadObjectList(this.tmpurl))
 
         var index = this.keyList.indexOf(this.selectedKey, 0);
         if (index > -1) {

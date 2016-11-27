@@ -29,43 +29,24 @@ var AppComponent = (function () {
         this.stringValue = "";
         this.selectedKey = "No key selected";
         this.mode = "JSON";
-        this.tmpurl = "";
+        this.serverUrl = "";
+        this.serverNamespace = "";
         //private settings;
         this.model = new dataStore_1.DataStore('', '', true);
         //let http1: Http;
         this.http1.get('manifest.webapp').map(function (res) { return res.json(); }).subscribe(function (manifest_data) {
-            console.log("a", JSON.stringify(manifest_data.activities.dhis.href));
-            _this.tmpurl = manifest_data.activities.dhis.href;
-            console.log("b", manifest_data.activities.dhis.href);
-            _this.loadObjectList(_this.tmpurl);
+            //console.log("a", JSON.stringify(manifest_data.activities.dhis.href));
+            _this.serverUrl = manifest_data.activities.dhis.href;
+            _this.serverNamespace = manifest_data.activities.dhis.namespace;
+            console.log("a: ", manifest_data.activities.dhis.href);
+            console.log("b: ", manifest_data.activities.dhis.namespace);
+            _this.loadObjectList(_this.serverUrl, _this.serverNamespace);
         });
     }
-    /*changeMode( newMode: string ): void {
-        //Changes the mode between edit and view
-
-        if(newMode == 'RAW') {
-            this.mode = 'RAWEDIT';
-        }
-        else if(newMode == 'EDIT'){
-
-            switch( this.mode ){
-                case 'JSON': this.mode = 'JSONEDIT';
-                    break;
-                case 'RAW': this.mode = 'RAWEDIT';
-                    break;
-                case 'JSONEDIT': this.mode = 'JSON';
-                    break;
-                case 'RAWEDIT': this.mode = 'RAW';
-                    break;
-            }
-        }
-
-        return;
-    }*/
-    AppComponent.prototype.loadObjectList = function (url) {
+    AppComponent.prototype.loadObjectList = function (url, namespace) {
         var _this = this;
         //Loads a list of all registered namespaces
-        this.appService.setUrl(url);
+        this.appService.setUrlAndNamespace(url, namespace);
         this.appService.getNamespaces().subscribe(function (res) { return _this.updateObjectList(res); });
     };
     AppComponent.prototype.updateObjectList = function (dataStore) {
@@ -103,24 +84,7 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.updateJSONList = function (JSONList) {
         //Updates the JSON values list to contain values given
-        /*this.JSONKeysList = [];
-        this.JSONValuesList = [];*/
         this.stringValue = "";
-        /*if(typeof JSONList == "string"){
-            this.stringValue = JSONList;
-            this.mode = "RAW";
-            console.log(JSONList);
-        }
-        else{
-            this.mode = "RAWJSON";
-            this.stringValue = JSON.stringify(JSONList);
-
-            for(var keyName in JSONList){
-                var value= JSONList[keyName ];
-                this.JSONKeysList.push(keyName);
-                this.JSONValuesList.push(JSON.stringify(value));
-            }
-        }*/
         this.mode = "EDIT";
         this.stringValue = JSON.stringify(JSONList, null, 4);
     };
@@ -133,7 +97,7 @@ var AppComponent = (function () {
         var keyName = document.getElementById("addKeyName").value;
         var keyValue = document.getElementById("addKeyValue").value;
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
-            .subscribe(this.loadObjectList(this.tmpurl));
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace));
         this.keyList[this.keyList.length] = keyName;
         this.mode = "SAVED";
     };
@@ -148,13 +112,13 @@ var AppComponent = (function () {
         //Saves all changes done to a key
         var content = document.getElementById("editTextArea").value;
         this.appService.saveChanges(this.selectedNamespace, this.selectedKey, content)
-            .subscribe(this.loadObjectList(this.tmpurl));
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace));
         this.mode = "SAVED";
     };
     AppComponent.prototype.deleteKey = function () {
         //Delete a key from a namespace.
         this.appService.deleteKey(this.selectedNamespace, this.selectedKey)
-            .subscribe(this.loadObjectList(this.tmpurl));
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace));
         var index = this.keyList.indexOf(this.selectedKey, 0);
         if (index > -1) {
             this.keyList.splice(index, 1);
@@ -198,7 +162,7 @@ var AppComponent = (function () {
     AppComponent = __decorate([
         core_1.Component({
             selector: 'my-app',
-            template: "\n    <div id=\"outerContainer\">\n        <div class=\"app\" id=\"mainContainer\">\n               \n            <h3>DataStore Manager Application</h3>\n        \n            <div id=\"dataStoreMainList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of namespaces\n                    </div>\n                    <div class=\"list-group-item\"><input type=\"text\" [ngModel]=\"searchModel\" id=\"namespaceSearch\" class=\"form-control\" placeholder=\"Search for namespaces\" (ngModelChange)=\"namespaceSearch()\"></div>\n                    <div class=\"list-group namespaceList\">\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of searchableDataStore;\" (click)=loadKeyList(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n\n            <div id=\"dataStoreKeyList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        List of keys\n                        <button class=\"glyphicon glyphicon-plus\" id=\"newKeyButton\" style=\"float: right; visibility: hidden;\" (click)=newKeyButton()></button>\n                    </div>\n                    <div class=\"list-group-item\"><input type=\"text\" [ngModel]=\"searchModel2\" id=\"keySearch\" class=\"form-control\" placeholder=\"Search for a key\" (ngModelChange)=\"keySearch()\"></div>\n                    <div class=\"list-group namespaceList\">\n                        <div></div>\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of searchableKeyList;\" (click)=loadJSONValues(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n            \n            <div id=\"dataStoreInfo\" class=\" col-md-6 col-sm-6\">\n                <div class=\"panel panel-default\">\n                  <div class=\"panel-heading\">\n                    <div class=\"row\">\n                      <div class=\"col-lg-6 h4\">\n                        {{selectedKey}}\n                      </div>\n                      <div class=\"pull-right\">\n                        <!--<button class=\"btn btn-warning buttonLeftAdjust\" (click)=\"changeMode('RAW')\">Raw text</button>\n                        <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"changeMode('EDIT')\">Edit</button>\n                        <button class=\"btn btn-danger buttonLeftAdjust\">Delete</button>-->\n                        <div ngSwitch=\"{{mode}}\">\n                            <div *ngSwitchCase=\"'EDIT'\">\n                                <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"saveChanges()\">Save changes</button>\n                                <button class=\"btn btn-warning buttonLeftAdjust\" (click)=\"cancelEdit()\">Cancel</button>\n                                <button class=\"btn btn-danger buttonLeftAdjust\" (click)=\"deleteKey()\">Delete key</button>\n                            </div>\n                            <div *ngSwitchCase=\"'NEWKEY'\">\n                                <button class=\"btn btn-danger buttonLeftAdjust\" (click)=\"cancelEdit()\">Cancel</button>\n                                <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"newKey()\">Save key</button>\n                            </div>\n                            <div *ngSwitchDefault>\n                            \n                            </div>\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"panel-body\" ngSwitch=\"{{mode}}\">\n                    <!--div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'JSONEDIT'\">\n                        <div class=\"panel panel-default\" *ngFor=\"let unit of JSONKeysList; let i=index\">\n                          <div class=\"panel-heading\">\n                            <div class=\"row\">\n                              <div class=\"col-lg-10\">\n                                <input class=\"form-control maxInputWidth\" value=\"{{unit}}\"/>\n                              </div>\n                            </div>\n                          </div>\n                          <div class=\"panel-body\">\n                            <div class=\"row\">\n                              <div class=\"col-lg-10\">\n                                <input class=\"form-control\" value=\"{{JSONValuesList[i]}}\"/>\n                              </div>\n                            </div>\n                          </div>\n                        </div>\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'JSON'\">\n                        <div class=\"panel panel-default\" *ngFor=\"let unit of JSONKeysList; let i=index\">\n                            <div class=\"panel-heading\">{{unit}}</div>\n                            <div class=\"panel-body\">{{JSONValuesList[i]}}</div>\n                        </div>\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'RAWEDIT'\">\n                        <div contenteditable=\"true\" >{{stringValue}}</div>\n                    </div-->\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'NEWKEY'\">\n                        <div class=\"panel-heading\">\n                            <div class=\"row\">\n                                <div class=\"col-lg-12\">\n                                    <input id=\"addKeyName\" class=\"form-control\" placeholder=\"Key Name\"/>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"panel-body\">\n                            <div class=\"row\">\n                                <div class=\"col-lg-12\">\n                                    <textarea id=\"addKeyValue\" class=\"fullSize\" placeholder=\"Key Value\"></textarea>\n                                    <!--/input id=\"addKeyValue\" class=\"form-control\" placeholder=\"Values\"/-->\n                                </div>\n                            </div>\n                        </div>\n                        <!--button class=\"btn btn-success\" (click)=\"newKey()\">Save</button-->\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'EDIT'\">\n                        <textarea id=\"editTextArea\" class=\"fullSize\">{{stringValue}}</textarea>\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'SAVED'\">\n                        Changes Saved\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'DELETED'\">\n                        Key Deleted\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchDefault>\n                    \n                    </div>\n                  </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div>\n    <!--\n    TODO list\n    -distinguish between plain text and JSON (scan for c-brackets)\n    Make raw text mode \n    add support for parsing nested json objects\n    \n    LATER\n    Make statistics page\n    Make history page\n    Upload to DHIS2 and make a namespace\n    Save changes to keys\n    Save history of changes-->\n</div>\n    \n"
+            template: "\n    <div id=\"outerContainer\">\n        <div class=\"app\" id=\"mainContainer\">\n               \n            <h3>DataStore Manager Application</h3>\n        \n            <div id=\"dataStoreMainList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        <div class=\"row\">\n                            <span class=\"col-lg-12 h4\">List of namespaces</span>\n                        </div>\n                    </div>\n                    <div class=\"list-group-item zeroBorder\">\n                        <input class=\"form-control\" type=\"text\" [ngModel]=\"searchModel\" id=\"namespaceSearch\" placeholder=\"Search for namespaces\" (ngModelChange)=\"namespaceSearch()\">\n                    </div>\n                    <div class=\"list-group namespaceList\">\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of searchableDataStore;\" (click)=loadKeyList(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n\n            <div id=\"dataStoreKeyList\" class=\" col-md-3 col-sm-3\">\n                <div class=\"panel panel-default\">\n                    <div class=\"panel-heading\">\n                        <div class=\"row\">\n                            <span class=\"col-lg-8 h4\">List of keys</span>\n                            <button class=\"btn btn-primary glyphicon glyphicon-plus buttonLeftAdjust\" id=\"newKeyButton\" style=\"float: right; visibility: hidden;\" (click)=newKeyButton()></button>\n                    \n                        </div>\n                    </div>\n                    <div class=\"list-group-item zeroBorder\">\n                        <input class=\"form-control\" type=\"text\" [ngModel]=\"searchModel2\" id=\"keySearch\" placeholder=\"Search for a key\" (ngModelChange)=\"keySearch()\">\n                    </div>\n                    <div class=\"list-group namespaceList\">\n                        <div></div>\n                        <div class=\"list-group-item ListObjects\" *ngFor=\"let unit of searchableKeyList;\" (click)=loadJSONValues(unit)>{{unit}}</div>\n                    </div>\n                </div>\n            </div>\n            \n            <div id=\"dataStoreInfo\" class=\" col-md-6 col-sm-6\">\n                <div class=\"panel panel-default\">\n                  <div class=\"panel-heading\">\n                    <div class=\"row\">\n                      <div class=\"col-lg-6 h4\">\n                        {{selectedKey}}\n                      </div>\n                      <div class=\"pull-right\">\n                        <!--<button class=\"btn btn-warning buttonLeftAdjust\" (click)=\"changeMode('RAW')\">Raw text</button>\n                        <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"changeMode('EDIT')\">Edit</button>\n                        <button class=\"btn btn-danger buttonLeftAdjust\">Delete</button>-->\n                        <div ngSwitch=\"{{mode}}\">\n                            <div *ngSwitchCase=\"'EDIT'\">\n                                <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"saveChanges()\">Save changes</button>\n                                <button class=\"btn btn-warning buttonLeftAdjust\" (click)=\"cancelEdit()\">Cancel</button>\n                                <button class=\"btn btn-danger buttonLeftAdjust\" (click)=\"deleteKey()\">Delete key</button>\n                            </div>\n                            <div *ngSwitchCase=\"'NEWKEY'\">\n                                <button class=\"btn btn-danger buttonLeftAdjust\" (click)=\"cancelEdit()\">Cancel</button>\n                                <button class=\"btn btn-primary buttonLeftAdjust\" (click)=\"newKey()\">Save key</button>\n                            </div>\n                            <div *ngSwitchDefault>\n                            \n                            </div>\n                        </div>\n                      </div>\n                    </div>\n                  </div>\n                  <div class=\"panel-body\" ngSwitch=\"{{mode}}\">\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'NEWKEY'\">\n                        <div class=\"panel-heading\">\n                            <div class=\"row\">\n                                <div class=\"col-lg-12\">\n                                    <input id=\"addKeyName\" class=\"form-control\" placeholder=\"Key Name\"/>\n                                </div>\n                            </div>\n                        </div>\n                        <div class=\"panel-body\">\n                            <div class=\"row\">\n                                <div class=\"col-lg-12 JSONBox\">\n                                    <textarea id=\"addKeyValue\" class=\"fullSize zeroBorder\">{\n    \"label\":\"value\"\n}</textarea><!--Default values for new JSON key-->\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                    <div class=\"JSONValues JSONBox\" id=\"JSONValues\" *ngSwitchCase=\"'EDIT'\">\n                        <textarea id=\"editTextArea\" class=\"fullSize zeroBorder\">{{stringValue}}</textarea>\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'SAVED'\">\n                        Changes Saved\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchCase=\"'DELETED'\">\n                        Key Deleted\n                    </div>\n                    <div class=\"JSONValues\" id=\"JSONValues\" *ngSwitchDefault>\n                    \n                    </div>\n                  </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div>\n</div>\n    \n"
         }), 
         __metadata('design:paramtypes', [app_service_1.AppService, http_1.Http])
     ], AppComponent);

@@ -15,27 +15,17 @@ require('rxjs/Rx');
 var AppService = (function () {
     //VARIABLES END
     function AppService(http) {
-        /*$.getJSON( "manifest.webapp", function( json ) {
-            console.log("f: ", json);
-            this.serverUrl = JSON.stringify(json.activities.dhis.href) + "/api/dataStore";
-        } );*/
-        var _this = this;
         this.http = http;
         //VARIABLES START
-        //private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
-        this.serverUrl = 'k';
-        this.historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
+        this.serverUrl = '';
+        this.historyUrl = '';
         this.headers = new http_1.Headers({ 'Content-Type': 'application/json' });
         this.basicAuth = "Basic " + btoa('admin:district');
-        this.http.get('manifest.webapp').map(function (res) { return res.json(); }).subscribe(function (manifest_data) {
-            console.log(JSON.stringify(manifest_data.activities.dhis.href));
-            _this.serverUrl = JSON.stringify(manifest_data.activities.dhis.href);
-        });
-        console.log(this.serverUrl);
-        console.log(this.serverUrl);
     }
-    AppService.prototype.setUrl = function (url) {
+    AppService.prototype.setUrlAndNamespace = function (url, namespace) {
         this.serverUrl = url + "/api/dataStore";
+        this.historyUrl = this.serverUrl + "/" + namespace;
+        console.log("Historyurl: ", this.historyUrl);
     };
     AppService.prototype.newKey = function (namespace, keyName, keyValue) {
         //Receive a namespace and a keyName and saves it to the database.
@@ -53,16 +43,11 @@ var AppService = (function () {
     };
     AppService.prototype.deleteDataStoreObject = function (objectId) {
         //Delete a datastore object with the received ID
+        //Not implemented since namespaces are not removable from the current api
     };
     AppService.prototype.getNamespaces = function () {
         //Returns all the registered namespaces.
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
-        //start video change to json
-        //DO NOT DELETE THIS CODE! IF YOU DO YOU WILL RECEIVE A BLANKET PARTY AT 3 AM
-        /*return this.http
-            .put(`${this.serverUrl}/social-media-video/hjcF14oVjo4`, '{"Link": "https://www.youtube.com/embed/gFnnNWC55Iw"}', {headers: this.headers})
-            .map( res => res.json() )*/
-        //end video change to json
         return this.http.get(this.serverUrl, { headers: this.headers }).map(function (res) { return res.json(); });
     };
     AppService.prototype.getNamespaceKeys = function (namespace) {
@@ -82,7 +67,6 @@ var AppService = (function () {
         var _this = this;
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
         var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, { headers: this.headers });
-        //.map(res => res.json());
         var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, "" + content, { headers: this.headers })
             .map(function (res) { return res.json(); });
         oldContentObs.subscribe(function (res) { return _this.historyChange(namespace, key, JSON.stringify(res.json()), "UPDATE"); });

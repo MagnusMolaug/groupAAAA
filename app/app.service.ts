@@ -11,9 +11,8 @@ export class AppService {
 
     //VARIABLES START
 
-    //private serverUrl = 'https://play.dhis2.org/test/api/dataStore';
-    private serverUrl = 'k';
-    private historyUrl = 'https://play.dhis2.org/test/api/dataStore/asf';
+    private serverUrl = '';
+    private historyUrl = '';
 
     private headers = new Headers({'Content-Type': 'application/json'});
 
@@ -23,23 +22,14 @@ export class AppService {
 
     constructor(private http: Http) {
 
-        /*$.getJSON( "manifest.webapp", function( json ) {
-            console.log("f: ", json);
-            this.serverUrl = JSON.stringify(json.activities.dhis.href) + "/api/dataStore";
-        } );*/
-
-
-        this.http.get('manifest.webapp').map(res => res.json()).subscribe((manifest_data) => {
-            console.log(JSON.stringify(manifest_data.activities.dhis.href));
-            this.serverUrl = JSON.stringify(manifest_data.activities.dhis.href);
-        });
-        console.log(this.serverUrl);
-        console.log(this.serverUrl);
     }
 
-    setUrl(url: string){
+    setUrlAndNamespace(url: string, namespace: string){
         this.serverUrl = url + "/api/dataStore";
+        this.historyUrl = this.serverUrl + "/" + namespace;
+        console.log("Historyurl: ",this.historyUrl);
     }
+
 
     newKey(namespace : string, keyName : string, keyValue : string): any {
         //Receive a namespace and a keyName and saves it to the database.
@@ -62,6 +52,7 @@ export class AppService {
 
     deleteDataStoreObject(objectId): any {
         //Delete a datastore object with the received ID
+        //Not implemented since namespaces are not removable from the current api
     }
 
     getNamespaces(): any{
@@ -69,17 +60,7 @@ export class AppService {
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 
-        //start video change to json
-        //DO NOT DELETE THIS CODE! IF YOU DO YOU WILL RECEIVE A BLANKET PARTY AT 3 AM
-
-        /*return this.http
-            .put(`${this.serverUrl}/social-media-video/hjcF14oVjo4`, '{"Link": "https://www.youtube.com/embed/gFnnNWC55Iw"}', {headers: this.headers})
-            .map( res => res.json() )*/
-
-        //end video change to json
-
         return this.http.get(this.serverUrl, {headers: this.headers}).map(res => res.json());
-
     }
 
     getNamespaceKeys( namespace ): any{
@@ -104,8 +85,7 @@ export class AppService {
 
         this.headers.append('Authorization', "Basic " + btoa("admin:district"));
 
-        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers})
-            //.map(res => res.json());
+        var oldContentObs = this.http.get(this.serverUrl + '/' + namespace + '/' + key, {headers: this.headers});
 
         var res = this.http.put(this.serverUrl + '/' + namespace + '/' + key, `${content}` ,{headers: this.headers})
             .map(res => res.json());
@@ -129,6 +109,7 @@ export class AppService {
         var exist = true;
         var historyContent = [];
         var stringJSON = "";
+
 
         var get = this.http
             .get(`${this.historyUrl}/${historyKey}`, {headers: this.headers})
@@ -185,7 +166,4 @@ export class AppService {
     historyDelete(){
 
     }
-
-    
-
 }

@@ -17,9 +17,13 @@ import 'rxjs/Rx';
             <div id="dataStoreMainList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        List of namespaces
+                        <div class="row">
+                            <span class="col-lg-12 h4">List of namespaces</span>
+                        </div>
                     </div>
-                    <div class="list-group-item"><input type="text" [ngModel]="searchModel" id="namespaceSearch" class="form-control" placeholder="Search for namespaces" (ngModelChange)="namespaceSearch()"></div>
+                    <div class="list-group-item zeroBorder">
+                        <input class="form-control" type="text" [ngModel]="searchModel" id="namespaceSearch" placeholder="Search for namespaces" (ngModelChange)="namespaceSearch()">
+                    </div>
                     <div class="list-group namespaceList">
                         <div class="list-group-item ListObjects" *ngFor="let unit of searchableDataStore;" (click)=loadKeyList(unit)>{{unit}}</div>
                     </div>
@@ -29,10 +33,15 @@ import 'rxjs/Rx';
             <div id="dataStoreKeyList" class=" col-md-3 col-sm-3">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        List of keys
-                        <button class="glyphicon glyphicon-plus" id="newKeyButton" style="float: right; visibility: hidden;" (click)=newKeyButton()></button>
+                        <div class="row">
+                            <span class="col-lg-8 h4">List of keys</span>
+                            <button class="btn btn-primary glyphicon glyphicon-plus buttonLeftAdjust" id="newKeyButton" style="float: right; visibility: hidden;" (click)=newKeyButton()></button>
+                    
+                        </div>
                     </div>
-                    <div class="list-group-item"><input type="text" [ngModel]="searchModel2" id="keySearch" class="form-control" placeholder="Search for a key" (ngModelChange)="keySearch()"></div>
+                    <div class="list-group-item zeroBorder">
+                        <input class="form-control" type="text" [ngModel]="searchModel2" id="keySearch" placeholder="Search for a key" (ngModelChange)="keySearch()">
+                    </div>
                     <div class="list-group namespaceList">
                         <div></div>
                         <div class="list-group-item ListObjects" *ngFor="let unit of searchableKeyList;" (click)=loadJSONValues(unit)>{{unit}}</div>
@@ -69,33 +78,6 @@ import 'rxjs/Rx';
                     </div>
                   </div>
                   <div class="panel-body" ngSwitch="{{mode}}">
-                    <!--div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSONEDIT'">
-                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; let i=index">
-                          <div class="panel-heading">
-                            <div class="row">
-                              <div class="col-lg-10">
-                                <input class="form-control maxInputWidth" value="{{unit}}"/>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="panel-body">
-                            <div class="row">
-                              <div class="col-lg-10">
-                                <input class="form-control" value="{{JSONValuesList[i]}}"/>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    </div>
-                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'JSON'">
-                        <div class="panel panel-default" *ngFor="let unit of JSONKeysList; let i=index">
-                            <div class="panel-heading">{{unit}}</div>
-                            <div class="panel-body">{{JSONValuesList[i]}}</div>
-                        </div>
-                    </div>
-                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'RAWEDIT'">
-                        <div contenteditable="true" >{{stringValue}}</div>
-                    </div-->
                     <div class="JSONValues" id="JSONValues" *ngSwitchCase="'NEWKEY'">
                         <div class="panel-heading">
                             <div class="row">
@@ -106,16 +88,16 @@ import 'rxjs/Rx';
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-12">
-                                    <textarea id="addKeyValue" class="fullSize" placeholder="Key Value"></textarea>
-                                    <!--/input id="addKeyValue" class="form-control" placeholder="Values"/-->
+                                <div class="col-lg-12 JSONBox">
+                                    <textarea id="addKeyValue" class="fullSize zeroBorder">{
+    "label":"value"
+}</textarea><!--Default values for new JSON key-->
                                 </div>
                             </div>
                         </div>
-                        <!--button class="btn btn-success" (click)="newKey()">Save</button-->
                     </div>
-                    <div class="JSONValues" id="JSONValues" *ngSwitchCase="'EDIT'">
-                        <textarea id="editTextArea" class="fullSize">{{stringValue}}</textarea>
+                    <div class="JSONValues JSONBox" id="JSONValues" *ngSwitchCase="'EDIT'">
+                        <textarea id="editTextArea" class="fullSize zeroBorder">{{stringValue}}</textarea>
                     </div>
                     <div class="JSONValues" id="JSONValues" *ngSwitchCase="'SAVED'">
                         Changes Saved
@@ -132,18 +114,6 @@ import 'rxjs/Rx';
         </div>
     </div>
     <div>
-    <!--
-    TODO list
-    -distinguish between plain text and JSON (scan for c-brackets)
-    Make raw text mode 
-    add support for parsing nested json objects
-    
-    LATER
-    Make statistics page
-    Make history page
-    Upload to DHIS2 and make a namespace
-    Save changes to keys
-    Save history of changes-->
 </div>
     
 `
@@ -165,7 +135,8 @@ export class AppComponent {
 
     public mode = "JSON";
 
-    public tmpurl = "";
+    public serverUrl = "";
+    public serverNamespace = "";
     //private settings;
 
     model = new DataStore('', '', true);
@@ -175,40 +146,19 @@ export class AppComponent {
     constructor(private appService: AppService, private http1: Http) {
         //let http1: Http;
         this.http1.get('manifest.webapp').map(res => res.json()).subscribe((manifest_data) => {
-            console.log("a", JSON.stringify(manifest_data.activities.dhis.href));
-            this.tmpurl = manifest_data.activities.dhis.href;
-            console.log("b",manifest_data.activities.dhis.href);
-            this.loadObjectList(this.tmpurl);
+            //console.log("a", JSON.stringify(manifest_data.activities.dhis.href));
+            this.serverUrl = manifest_data.activities.dhis.href;
+            this.serverNamespace = manifest_data.activities.dhis.namespace;
+            console.log("a: ",manifest_data.activities.dhis.href);
+            console.log("b: ",manifest_data.activities.dhis.namespace);
+            this.loadObjectList(this.serverUrl, this.serverNamespace);
         });
 
     }
 
-    /*changeMode( newMode: string ): void {
-        //Changes the mode between edit and view
-
-        if(newMode == 'RAW') {
-            this.mode = 'RAWEDIT';
-        }
-        else if(newMode == 'EDIT'){
-
-            switch( this.mode ){
-                case 'JSON': this.mode = 'JSONEDIT';
-                    break;
-                case 'RAW': this.mode = 'RAWEDIT';
-                    break;
-                case 'JSONEDIT': this.mode = 'JSON';
-                    break;
-                case 'RAWEDIT': this.mode = 'RAW';
-                    break;
-            }
-        }
-
-        return;
-    }*/
-
-    loadObjectList(url: string): void {
+    loadObjectList(url: string, namespace: string): void {
         //Loads a list of all registered namespaces
-        this.appService.setUrl(url);
+        this.appService.setUrlAndNamespace(url, namespace);
         this.appService.getNamespaces().subscribe(res => this.updateObjectList(res));
     }
 
@@ -255,25 +205,7 @@ export class AppComponent {
     updateJSONList( JSONList ): void{
         //Updates the JSON values list to contain values given
 
-        /*this.JSONKeysList = [];
-        this.JSONValuesList = [];*/
         this.stringValue = "";
-
-        /*if(typeof JSONList == "string"){
-            this.stringValue = JSONList;
-            this.mode = "RAW";
-            console.log(JSONList);
-        }
-        else{
-            this.mode = "RAWJSON";
-            this.stringValue = JSON.stringify(JSONList);
-
-            for(var keyName in JSONList){
-                var value= JSONList[keyName ];
-                this.JSONKeysList.push(keyName);
-                this.JSONValuesList.push(JSON.stringify(value));
-            }
-        }*/
         this.mode = "EDIT";
         this.stringValue = JSON.stringify(JSONList, null, 4);
     }
@@ -290,7 +222,7 @@ export class AppComponent {
         var keyValue = (<HTMLInputElement>document.getElementById("addKeyValue")).value;
 
         this.appService.newKey(this.selectedNamespace, keyName, keyValue)
-            .subscribe(this.loadObjectList(this.tmpurl))
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace))
 
         this.keyList[this.keyList.length] = keyName;
 
@@ -311,7 +243,7 @@ export class AppComponent {
         var content = (<HTMLInputElement>document.getElementById("editTextArea")).value;
 
         this.appService.saveChanges(this.selectedNamespace, this.selectedKey, content)
-            .subscribe(this.loadObjectList(this.tmpurl))
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace))
 
         this.mode = "SAVED";
     }
@@ -320,7 +252,7 @@ export class AppComponent {
         //Delete a key from a namespace.
 
         this.appService.deleteKey(this.selectedNamespace, this.selectedKey)
-            .subscribe(this.loadObjectList(this.tmpurl))
+            .subscribe(this.loadObjectList(this.serverUrl, this.serverNamespace))
 
         var index = this.keyList.indexOf(this.selectedKey, 0);
         if (index > -1) {

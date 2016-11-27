@@ -13,19 +13,14 @@
         <script src="node_modules/systemjs/dist/system.src.js"></script>
         <!-- 2. Configure SystemJS -->
         <script src="systemjs.config.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="scripts/jquery.min.js"></script><!--https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js-->
         <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
         <script>
-            System.import('app')/*.then((m) => {
-                var url = "test";
-
-            })*/
-
-            .catch(function(err){ console.error(err); });
+            System.import('app').catch(function(err){ console.error(err); });
         </script>
     </head>
     <!-- 3. Display the application -->
     <body id="body">
-        <my-app>LOADING</my-app>
+        <my-app><div class="loading">Loading&#8230;</div></my-app>
     </body>
 </html>

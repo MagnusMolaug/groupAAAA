@@ -2,7 +2,7 @@
     "version": "1.0",
     "name": "Datastore Manager Application",
     "description": "Application for managing the content of the datastore namespaces",
-    "launch_path": "/index.html",
+    "launch_path": "index.html",
     "appType": "APP",
     "icons": {
         "16": "/img/icons/mortar-16.png",
@@ -11,7 +11,7 @@
     },
     "developer": {
         "name": "Group AAAA",
-        "url": "http://example.com"
+        "url": "https://wiki.uio.no/mn/ifi/inf5750/index.php/Group_AAAA"
     },
     "default_locale": "en",
     "activities": {

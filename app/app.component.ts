@@ -5,7 +5,6 @@ import {Headers, Http} from '@angular/http';
 
 import 'rxjs/Rx';
 
-
 @Component({
     selector: 'my-app',
     template: `

@@ -1,4 +1,19 @@
-# Angular 2 Organisation Unit app for INF5750
+# Angular 2 Datastore Manager application by Group AAAA for INF5750
+
+##Group members
+**Name:** Magnus W. Molaug
+**Student id:** kmmolaug
+
+**Name:** Eirik Fjellheim Andersen
+**Student id:** eirikfan
+
+**Name:** Cory Steven Briggs
+**Student id:** corysb
+
+**Name:** Akam Neeson
+**Student id:** akamn
+
+
 
 ##How to run this stuff
 
